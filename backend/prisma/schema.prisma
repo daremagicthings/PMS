@@ -1,0 +1,271 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ──────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  RESIDENT
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum TicketStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+}
+
+enum NotificationType {
+  TICKET_UPDATE
+  NEW_COMMENT
+  INVOICE
+  ANNOUNCEMENT
+  SYSTEM
+}
+
+enum PollStatus {
+  ACTIVE
+  CLOSED
+}
+
+// ─── MODELS ─────────────────────────────────────────────
+
+/// Represents an Admin or Resident user in the system.
+model User {
+  id           String   @id @default(uuid())
+  email        String?  @unique
+  phone        String?  @unique
+  name         String
+  role         Role     @default(RESIDENT)
+  passwordHash    String
+  expoPushToken   String?
+
+  apartment   Apartment? @relation(fields: [apartmentId], references: [id], onDelete: SetNull)
+  apartmentId String?
+
+  tickets        Ticket[]
+  announcements  Announcement[]
+  ticketComments TicketComment[]
+  notifications  Notification[]
+  pollVotes      PollVote[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+/// Represents a physical apartment unit within a building.
+model Apartment {
+  id           String @id @default(uuid())
+  buildingName String
+  entrance     String
+  floor        Int
+  unitNumber   String
+
+  residents User[]
+  invoices  Invoice[]
+  tickets   Ticket[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([buildingName, entrance, unitNumber])
+  @@map("apartments")
+}
+
+/// Represents a monthly fee invoice linked to an apartment.
+model Invoice {
+  id             String        @id @default(uuid())
+  amount         Float
+  description    String?
+  status         InvoiceStatus @default(PENDING)
+  dueDate        DateTime
+  paidAt         DateTime?
+  qpayUrl        String?
+  qpayInvoiceId  String?
+  ebarimtId      String?
+  lotteryNumber  String?
+  ebarimtQrCode  String?
+
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Restrict)
+  apartmentId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("invoices")
+}
+
+/// Represents a maintenance request or complaint submitted by a resident.
+model Ticket {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  imageUrl    String?
+  status      TicketStatus @default(NEW)
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  apartmentId String
+
+  comments TicketComment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tickets")
+}
+
+/// Represents an announcement or meeting notice created by an Admin.
+model Announcement {
+  id          String  @id @default(uuid())
+  title       String
+  content     String
+  meetingLink String?
+
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdById String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("announcements")
+}
+
+/// Represents a comment on a ticket, written by an Admin or Resident.
+model TicketComment {
+  id      String @id @default(uuid())
+  content String
+
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticketId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("ticket_comments")
+}
+
+/// Notification record sent to a user for various events.
+model Notification {
+  id      String           @id @default(uuid())
+  title   String
+  message String
+  type    NotificationType @default(SYSTEM)
+  isRead  Boolean          @default(false)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+// ─── TRANSPARENCY & REPORTING ───────────────────────────
+
+enum WorkPlanStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+}
+
+/// Represents a work plan item for building maintenance or improvements.
+model WorkPlan {
+  id           String         @id @default(uuid())
+  title        String
+  description  String
+  status       WorkPlanStatus @default(PLANNED)
+  expectedDate DateTime
+  imageUrl     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("work_plans")
+}
+
+/// Represents a monthly financial transparency report.
+model FinancialReport {
+  id           String  @id @default(uuid())
+  month        Int
+  year         Int
+  totalIncome  Float
+  totalExpense Float
+  description  String?
+  imageUrl     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([month, year])
+  @@map("financial_reports")
+}
+
+/// Represents a digital vote/poll created by an Admin.
+model Poll {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  status      PollStatus @default(ACTIVE)
+  endDate     DateTime?
+
+  options PollOption[]
+  votes   PollVote[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("polls")
+}
+
+/// One selectable option within a poll.
+model PollOption {
+  id   String @id @default(uuid())
+  text String
+
+  poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  pollId String
+
+  votes PollVote[]
+
+  @@map("poll_options")
+}
+
+/// Records a single vote cast by a user. One vote per user per poll.
+model PollVote {
+  id String @id @default(uuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  poll   Poll   @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  pollId String
+
+  option   PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  optionId String
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, pollId])
+  @@map("poll_votes")
+}

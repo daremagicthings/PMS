@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: soh_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: soh_db
+      POSTGRES_USER: soh_user
+      POSTGRES_PASSWORD: soh_password
+    volumes:
+      - soh_pgdata:/var/lib/postgresql/data
+
+volumes:
+  soh_pgdata:
