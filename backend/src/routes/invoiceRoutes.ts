@@ -4,6 +4,7 @@ import {
     getAllInvoicesController,
     markInvoiceAsPaidController,
     getEbarimtController,
+    calculatePenaltiesController,
 } from '../controllers/invoiceController';
 import { createQpayInvoiceController } from '../controllers/qpayController';
 
@@ -12,8 +13,11 @@ const router = Router();
 /** POST /api/invoices — Admin creates a new invoice */
 router.post('/', createInvoiceController);
 
-/** GET /api/invoices — List all invoices */
+/** GET /api/invoices — List all invoices (admin=all, resident=own) */
 router.get('/', getAllInvoicesController);
+
+/** POST /api/invoices/calculate-penalties — Admin calculates penalties */
+router.post('/calculate-penalties', calculatePenaltiesController);
 
 /** PUT /api/invoices/:id/pay — Mark invoice as PAID */
 router.put('/:id/pay', markInvoiceAsPaidController);
@@ -25,3 +29,4 @@ router.post('/:id/qpay', createQpayInvoiceController);
 router.get('/:id/ebarimt', getEbarimtController);
 
 export default router;
+

@@ -9,6 +9,7 @@ import Account from './pages/Account';
 import WorkPlans from './pages/WorkPlans';
 import Financials from './pages/Financials';
 import Polls from './pages/Polls';
+import Vehicles from './pages/Vehicles';
 
 /**
  * Root application component with client-side routing.
@@ -27,9 +28,11 @@ export default function App() {
           <Route path="/work-plans" element={<WorkPlans />} />
           <Route path="/financials" element={<Financials />} />
           <Route path="/polls" element={<Polls />} />
+          <Route path="/vehicles" element={<Vehicles />} />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
+
 

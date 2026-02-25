@@ -69,7 +69,7 @@ model User {
   @@map("users")
 }
 
-/// Represents a physical apartment unit within a building.
+/// Represents a physical unit within a building (apartment, musar, or basement).
 model Apartment {
   id           String @id @default(uuid())
   buildingName String
@@ -77,9 +77,23 @@ model Apartment {
   floor        Int
   unitNumber   String
 
+  /// Unit classification: "APARTMENT" | "MUSAR" | "BASEMENT"
+  unitType       String    @default("APARTMENT")
+  /// Owner of the unit (nullable — may not have a registered owner)
+  ownerId        String?
+  /// Tenant currently leasing the unit (nullable)
+  tenantId       String?
+  /// Lease period start date
+  leaseStartDate DateTime?
+  /// Lease period end date
+  leaseEndDate   DateTime?
+  /// External contract reference ID
+  contractId     String?
+
   residents User[]
   invoices  Invoice[]
   tickets   Ticket[]
+  vehicles  Vehicle[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -92,6 +106,7 @@ model Apartment {
 model Invoice {
   id             String        @id @default(uuid())
   amount         Float
+  penaltyAmount  Float         @default(0)
   description    String?
   status         InvoiceStatus @default(PENDING)
   dueDate        DateTime
@@ -198,10 +213,28 @@ model WorkPlan {
   expectedDate DateTime
   imageUrl     String?
 
+  /// Category: "REGULAR" | "SCHEDULED" | "AD_HOC"
+  category     String         @default("REGULAR")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("work_plans")
+}
+
+/// Represents a vehicle registered to an apartment.
+model Vehicle {
+  id           String    @id @default(uuid())
+  licensePlate String    @unique
+  makeModel    String
+
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  apartmentId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("vehicles")
 }
 
 /// Represents a monthly financial transparency report.

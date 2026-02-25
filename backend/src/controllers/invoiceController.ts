@@ -2,7 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import {
     createInvoice,
     getAllInvoices,
+    getInvoicesForResident,
     markInvoiceAsPaid,
+    calculatePenalties,
     CreateInvoiceInput,
 } from '../services/invoiceService';
 import { generateEbarimt } from '../services/ebarimtService';
@@ -46,20 +48,54 @@ export const createInvoiceController = async (
 
 /**
  * Controller for GET /api/invoices
- * Lists all invoices with apartment info.
+ * Admin: all invoices. Resident: only their linked apartments.
  */
 export const getAllInvoicesController = async (
-    _req: Request,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {
-        const invoices = await getAllInvoices();
+        const user = req.user;
+        let invoices;
+
+        if (user && user.role === 'RESIDENT') {
+            invoices = await getInvoicesForResident(user.userId);
+        } else {
+            invoices = await getAllInvoices();
+        }
 
         res.status(200).json({
             success: true,
             message: 'Invoices retrieved successfully',
             data: invoices,
+        });
+    } catch (error) {
+        next(error instanceof Error ? error : new Error('Unknown error'));
+    }
+};
+
+/**
+ * Controller for POST /api/invoices/calculate-penalties
+ * Admin-only: applies 5000 MNT penalty to all overdue PENDING invoices.
+ */
+export const calculatePenaltiesController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        if (!req.user || req.user.role !== 'ADMIN') {
+            res.status(403).json({ success: false, message: 'Admin access required' });
+            return;
+        }
+
+        const result = await calculatePenalties();
+
+        res.status(200).json({
+            success: true,
+            message: `Penalties applied to ${result.penalizedCount} overdue invoices`,
+            data: result,
         });
     } catch (error) {
         next(error instanceof Error ? error : new Error('Unknown error'));

@@ -9,6 +9,7 @@ import {
     ClipboardList,
     BarChart3,
     Vote,
+    Car,
 } from 'lucide-react';
 
 /**
@@ -23,6 +24,7 @@ const navItems = [
     { to: '/work-plans', label: 'Work Plans', icon: ClipboardList },
     { to: '/financials', label: 'Financials', icon: BarChart3 },
     { to: '/polls', label: 'Polls', icon: Vote },
+    { to: '/vehicles', label: 'Vehicles', icon: Car },
 ];
 
 /**

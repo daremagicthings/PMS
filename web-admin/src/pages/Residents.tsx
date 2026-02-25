@@ -1,32 +1,49 @@
 import { useEffect, useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import {
+    Building2, Plus, Pencil, Home, Key, Calendar, FileText, User as UserIcon
+} from 'lucide-react';
+import type { Apartment, User, ApiResponse } from '../services/api';
 import { apartmentApi, userApi } from '../services/api';
-import type { Apartment, User } from '../services/api';
 
-/**
- * Residents & Apartments page.
- * Shows apartments table with linked residents and an "Add Apartment" modal.
- */
+type TabKey = 'apartments' | 'leased';
+
+/** Unit type options */
+const UNIT_TYPES = [
+    { value: 'APARTMENT', label: '🏠 Орон сууц' },
+    { value: 'MUSAR', label: '🏪 Мусар' },
+    { value: 'BASEMENT', label: '🔧 Подвал' },
+];
+
+/** Empty form state */
+const emptyForm = {
+    buildingName: '', entrance: '', floor: 0, unitNumber: '',
+    unitType: 'APARTMENT', ownerId: '', tenantId: '',
+    leaseStartDate: '', leaseEndDate: '', contractId: '',
+};
+
 export default function Residents() {
     const [apartments, setApartments] = useState<Apartment[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<TabKey>('apartments');
     const [showModal, setShowModal] = useState(false);
-    const [formData, setFormData] = useState({ buildingName: '', entrance: '', floor: '', unitNumber: '' });
-    const [submitting, setSubmitting] = useState(false);
+    const [editId, setEditId] = useState<string | null>(null);
+    const [form, setForm] = useState(emptyForm);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState('');
 
+    // ─── Fetch data ────────────────────────────────────────
     const fetchData = async () => {
         try {
+            setLoading(true);
             const [aptRes, userRes] = await Promise.all([
                 apartmentApi.getAll(),
                 userApi.getAll(),
             ]);
-            setApartments(aptRes.data.data || []);
-            setUsers(userRes.data.data || []);
-        } catch (err) {
-            console.error('Residents fetch error:', err);
-            setError('Failed to load data');
+            setApartments(aptRes.data.data ?? []);
+            setUsers(userRes.data.data ?? []);
+        } catch (e) {
+            console.error('Failed to fetch data:', e);
         } finally {
             setLoading(false);
         }
@@ -34,153 +51,386 @@ export default function Residents() {
 
     useEffect(() => { fetchData(); }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSubmitting(true);
+    // ─── Filtered views ────────────────────────────────────
+    const apartmentUnits = apartments.filter(a => a.unitType === 'APARTMENT');
+    const leasedUnits = apartments.filter(a => a.unitType !== 'APARTMENT');
+
+    // ─── Modal helpers ─────────────────────────────────────
+    const openCreateModal = () => {
+        setEditId(null);
+        setForm({
+            ...emptyForm,
+            unitType: activeTab === 'leased' ? 'MUSAR' : 'APARTMENT',
+        });
+        setError('');
+        setShowModal(true);
+    };
+
+    const openEditModal = (apt: Apartment) => {
+        setEditId(apt.id);
+        setForm({
+            buildingName: apt.buildingName,
+            entrance: apt.entrance,
+            floor: apt.floor,
+            unitNumber: apt.unitNumber,
+            unitType: apt.unitType,
+            ownerId: apt.ownerId ?? '',
+            tenantId: apt.tenantId ?? '',
+            leaseStartDate: apt.leaseStartDate ? apt.leaseStartDate.slice(0, 10) : '',
+            leaseEndDate: apt.leaseEndDate ? apt.leaseEndDate.slice(0, 10) : '',
+            contractId: apt.contractId ?? '',
+        });
+        setError('');
+        setShowModal(true);
+    };
+
+    const handleSave = async () => {
+        if (!form.buildingName || !form.entrance || !form.unitNumber) {
+            setError('Барилга, орц, тасалгааны дугаар заавал оруулна');
+            return;
+        }
+
+        setSaving(true);
+        setError('');
         try {
-            await apartmentApi.create({
-                buildingName: formData.buildingName,
-                entrance: formData.entrance,
-                floor: parseInt(formData.floor, 10),
-                unitNumber: formData.unitNumber,
-            });
+            const payload = {
+                buildingName: form.buildingName,
+                entrance: form.entrance,
+                floor: Number(form.floor),
+                unitNumber: form.unitNumber,
+                unitType: form.unitType,
+                ownerId: form.ownerId || undefined,
+                tenantId: form.tenantId || undefined,
+                leaseStartDate: form.leaseStartDate || undefined,
+                leaseEndDate: form.leaseEndDate || undefined,
+                contractId: form.contractId || undefined,
+            };
+
+            if (editId) {
+                await apartmentApi.update(editId, payload);
+            } else {
+                await apartmentApi.create(payload as Parameters<typeof apartmentApi.create>[0]);
+            }
+
             setShowModal(false);
-            setFormData({ buildingName: '', entrance: '', floor: '', unitNumber: '' });
-            await fetchData();
-        } catch (err) {
-            console.error('Create apartment error:', err);
-            alert('Failed to create apartment. Please try again.');
+            fetchData();
+        } catch (e: unknown) {
+            const err = e as { response?: { data?: ApiResponse<void> } };
+            setError(err.response?.data?.message || 'Алдаа гарлаа');
         } finally {
-            setSubmitting(false);
+            setSaving(false);
         }
     };
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-            </div>
-        );
-    }
+    // ─── User name resolver ────────────────────────────────
+    const getUserName = (id: string | null): string => {
+        if (!id) return '—';
+        const u = users.find(u => u.id === id);
+        return u ? u.name : id.slice(0, 8) + '…';
+    };
 
-    if (error) {
-        return <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-red-700 font-medium">⚠️ {error}</div>;
-    }
+    // ─── Tab data ──────────────────────────────────────────
+    const displayData = activeTab === 'apartments' ? apartmentUnits : leasedUnits;
+    const isLeaseTab = activeTab === 'leased';
 
+    // ─── Render ────────────────────────────────────────────
     return (
-        <div className="space-y-6">
+        <div>
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <p className="text-sm text-slate-500">{apartments.length} apartments · {users.length} users</p>
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                    <Building2 className="text-blue-400" size={28} />
+                    <h1 className="text-2xl font-bold text-white">Оршин суугчид</h1>
                 </div>
                 <button
-                    onClick={() => setShowModal(true)}
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm"
+                    onClick={openCreateModal}
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors cursor-pointer"
                 >
-                    <Plus size={16} /> Add Apartment
+                    <Plus size={18} />
+                    {isLeaseTab ? 'Түрээсийн талбай нэмэх' : 'Орон сууц нэмэх'}
                 </button>
             </div>
 
-            {/* Apartments Table */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                <table className="w-full text-sm">
-                    <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200">
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Building</th>
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Entrance</th>
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Floor</th>
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Unit</th>
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Residents</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                        {apartments.map((apt) => (
-                            <tr key={apt.id} className="hover:bg-slate-50 transition-colors">
-                                <td className="px-6 py-4 font-medium text-slate-800">{apt.buildingName}</td>
-                                <td className="px-6 py-4 text-slate-600">{apt.entrance}</td>
-                                <td className="px-6 py-4 text-slate-600">{apt.floor}</td>
-                                <td className="px-6 py-4 text-slate-600">{apt.unitNumber}</td>
-                                <td className="px-6 py-4">
-                                    {apt.residents && apt.residents.length > 0 ? (
-                                        <div className="flex flex-wrap gap-1">
-                                            {apt.residents.map((r) => (
-                                                <span key={r.id} className="inline-block bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full">
-                                                    {r.name}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <span className="text-slate-400 text-xs">No residents</span>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                        {apartments.length === 0 && (
-                            <tr>
-                                <td colSpan={5} className="px-6 py-12 text-center text-slate-400">No apartments found. Add one to get started.</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+            {/* Tabs */}
+            <div className="flex gap-1 mb-6 bg-slate-800/60 rounded-xl p-1 w-fit">
+                <button
+                    onClick={() => setActiveTab('apartments')}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer ${activeTab === 'apartments'
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
+                            : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                        }`}
+                >
+                    <Home size={16} /> 🏠 Орон сууц
+                    <span className="ml-1 bg-slate-700/80 text-xs px-2 py-0.5 rounded-full">
+                        {apartmentUnits.length}
+                    </span>
+                </button>
+                <button
+                    onClick={() => setActiveTab('leased')}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer ${activeTab === 'leased'
+                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
+                            : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                        }`}
+                >
+                    <Key size={16} /> 📋 Түрээсийн талбай
+                    <span className="ml-1 bg-slate-700/80 text-xs px-2 py-0.5 rounded-full">
+                        {leasedUnits.length}
+                    </span>
+                </button>
             </div>
 
-            {/* Add Apartment Modal */}
+            {/* Table */}
+            {loading ? (
+                <p className="text-slate-400">Уншиж байна...</p>
+            ) : displayData.length === 0 ? (
+                <div className="text-center py-16 text-slate-500">
+                    <Building2 size={48} className="mx-auto mb-3 opacity-40" />
+                    <p className="text-lg font-medium">
+                        {isLeaseTab ? 'Түрээсийн талбай олдсонгүй' : 'Орон сууц олдсонгүй'}
+                    </p>
+                    <p className="text-sm mt-1">Дээрх товч дээр дарж шинэ бүртгэл нэмнэ үү</p>
+                </div>
+            ) : (
+                <div className="overflow-x-auto rounded-xl border border-slate-700/50 bg-slate-800/40">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="border-b border-slate-700/50 text-slate-400 text-xs uppercase tracking-wider">
+                                <th className="px-5 py-3.5">Барилга</th>
+                                <th className="px-5 py-3.5">Орц</th>
+                                <th className="px-5 py-3.5">Давхар</th>
+                                <th className="px-5 py-3.5">Тасалгаа</th>
+                                {isLeaseTab && <th className="px-5 py-3.5">Төрөл</th>}
+                                <th className="px-5 py-3.5">
+                                    {isLeaseTab ? 'Эзэмшигч' : 'Оршин суугч'}
+                                </th>
+                                {isLeaseTab && (
+                                    <>
+                                        <th className="px-5 py-3.5">Түрээслэгч</th>
+                                        <th className="px-5 py-3.5">Түрээсийн хугацаа</th>
+                                    </>
+                                )}
+                                <th className="px-5 py-3.5 text-right">Үйлдэл</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {displayData.map((apt) => (
+                                <tr
+                                    key={apt.id}
+                                    className="border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors"
+                                >
+                                    <td className="px-5 py-3.5 text-white font-medium">{apt.buildingName}</td>
+                                    <td className="px-5 py-3.5 text-slate-300">{apt.entrance}</td>
+                                    <td className="px-5 py-3.5 text-slate-300">{apt.floor}</td>
+                                    <td className="px-5 py-3.5 text-slate-300">{apt.unitNumber}</td>
+                                    {isLeaseTab && (
+                                        <td className="px-5 py-3.5">
+                                            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${apt.unitType === 'MUSAR'
+                                                    ? 'bg-amber-500/15 text-amber-400'
+                                                    : 'bg-purple-500/15 text-purple-400'
+                                                }`}>
+                                                {UNIT_TYPES.find(t => t.value === apt.unitType)?.label ?? apt.unitType}
+                                            </span>
+                                        </td>
+                                    )}
+                                    <td className="px-5 py-3.5 text-slate-300">
+                                        {isLeaseTab
+                                            ? getUserName(apt.ownerId)
+                                            : (apt.residents?.map(r => r.name).join(', ') || '—')
+                                        }
+                                    </td>
+                                    {isLeaseTab && (
+                                        <>
+                                            <td className="px-5 py-3.5 text-slate-300">
+                                                {getUserName(apt.tenantId)}
+                                            </td>
+                                            <td className="px-5 py-3.5 text-slate-400 text-sm">
+                                                {apt.leaseStartDate && apt.leaseEndDate
+                                                    ? `${new Date(apt.leaseStartDate).toLocaleDateString('mn-MN')} — ${new Date(apt.leaseEndDate).toLocaleDateString('mn-MN')}`
+                                                    : '—'
+                                                }
+                                            </td>
+                                        </>
+                                    )}
+                                    <td className="px-5 py-3.5 text-right">
+                                        <button
+                                            onClick={() => openEditModal(apt)}
+                                            className="text-slate-400 hover:text-blue-400 transition-colors p-1.5 rounded-lg hover:bg-slate-700/50 cursor-pointer"
+                                            title="Засах"
+                                        >
+                                            <Pencil size={16} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {/* ─── Modal ────────────────────────────────────── */}
             {showModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-                            <h3 className="text-lg font-semibold text-slate-800">Add Apartment</h3>
-                            <button onClick={() => setShowModal(false)} className="p-1 rounded-lg hover:bg-slate-100">
-                                <X size={18} className="text-slate-500" />
-                            </button>
-                        </div>
-                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-slate-700/50 max-h-[90vh] overflow-y-auto">
+                        <h2 className="text-xl font-bold text-white mb-5 flex items-center gap-2">
+                            <Building2 size={22} className="text-blue-400" />
+                            {editId ? 'Мэдээлэл засах' : (isLeaseTab ? 'Түрээсийн талбай нэмэх' : 'Орон сууц нэмэх')}
+                        </h2>
+
+                        {error && (
+                            <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2.5 mb-4">
+                                {error}
+                            </div>
+                        )}
+
+                        {/* Basic info */}
+                        <div className="grid grid-cols-2 gap-3 mb-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Building Name</label>
+                                <label className="text-xs text-slate-400 mb-1 block">Барилга *</label>
                                 <input
-                                    type="text" required value={formData.buildingName}
-                                    onChange={(e) => setFormData({ ...formData, buildingName: e.target.value })}
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                    placeholder="e.g. Building A"
+                                    className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                    value={form.buildingName}
+                                    onChange={e => setForm({ ...form, buildingName: e.target.value })}
+                                    placeholder="Барилга А"
                                 />
                             </div>
-                            <div className="grid grid-cols-3 gap-3">
+                            <div>
+                                <label className="text-xs text-slate-400 mb-1 block">Орц *</label>
+                                <input
+                                    className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                    value={form.entrance}
+                                    onChange={e => setForm({ ...form, entrance: e.target.value })}
+                                    placeholder="1"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs text-slate-400 mb-1 block">Давхар</label>
+                                <input
+                                    type="number"
+                                    className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                    value={form.floor}
+                                    onChange={e => setForm({ ...form, floor: Number(e.target.value) })}
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs text-slate-400 mb-1 block">Тасалгаа *</label>
+                                <input
+                                    className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                    value={form.unitNumber}
+                                    onChange={e => setForm({ ...form, unitNumber: e.target.value })}
+                                    placeholder="101"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Unit Type */}
+                        <div className="mb-4">
+                            <label className="text-xs text-slate-400 mb-1 flex items-center gap-1">
+                                <Home size={12} /> Төрөл
+                            </label>
+                            <select
+                                className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                value={form.unitType}
+                                onChange={e => setForm({ ...form, unitType: e.target.value })}
+                            >
+                                {UNIT_TYPES.map(t => (
+                                    <option key={t.value} value={t.value}>{t.label}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Divider — Lease section */}
+                        <div className="border-t border-slate-700/50 pt-4 mt-2 mb-4">
+                            <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                                <UserIcon size={14} className="text-blue-400" />
+                                Эзэмшигч & Түрээслэгч
+                            </h3>
+                            <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Entrance</label>
+                                    <label className="text-xs text-slate-400 mb-1 block">Эзэмшигч</label>
+                                    <select
+                                        className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                        value={form.ownerId}
+                                        onChange={e => setForm({ ...form, ownerId: e.target.value })}
+                                    >
+                                        <option value="">— Сонгох —</option>
+                                        {users.map(u => (
+                                            <option key={u.id} value={u.id}>{u.name} ({u.phone})</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-xs text-slate-400 mb-1 block">Түрээслэгч</label>
+                                    <select
+                                        className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                        value={form.tenantId}
+                                        onChange={e => setForm({ ...form, tenantId: e.target.value })}
+                                    >
+                                        <option value="">— Сонгох —</option>
+                                        {users.map(u => (
+                                            <option key={u.id} value={u.id}>{u.name} ({u.phone})</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Lease dates */}
+                        <div className="mb-4">
+                            <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                                <Calendar size={14} className="text-green-400" />
+                                Түрээсийн хугацаа
+                            </h3>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="text-xs text-slate-400 mb-1 block">Эхлэх огноо</label>
                                     <input
-                                        type="text" required value={formData.entrance}
-                                        onChange={(e) => setFormData({ ...formData, entrance: e.target.value })}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                        placeholder="1"
+                                        type="date"
+                                        className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                        value={form.leaseStartDate}
+                                        onChange={e => setForm({ ...form, leaseStartDate: e.target.value })}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Floor</label>
+                                    <label className="text-xs text-slate-400 mb-1 block">Дуусах огноо</label>
                                     <input
-                                        type="number" required value={formData.floor}
-                                        onChange={(e) => setFormData({ ...formData, floor: e.target.value })}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                        placeholder="3"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Unit №</label>
-                                    <input
-                                        type="text" required value={formData.unitNumber}
-                                        onChange={(e) => setFormData({ ...formData, unitNumber: e.target.value })}
-                                        className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                        placeholder="301"
+                                        type="date"
+                                        className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                        value={form.leaseEndDate}
+                                        onChange={e => setForm({ ...form, leaseEndDate: e.target.value })}
                                     />
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Contract ID */}
+                        <div className="mb-6">
+                            <label className="text-xs text-slate-400 mb-1 flex items-center gap-1">
+                                <FileText size={12} /> Гэрээний дугаар
+                            </label>
+                            <input
+                                className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                value={form.contractId}
+                                onChange={e => setForm({ ...form, contractId: e.target.value })}
+                                placeholder="GER-2025-001"
+                            />
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex justify-end gap-3">
                             <button
-                                type="submit" disabled={submitting}
-                                className="w-full bg-blue-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                onClick={() => setShowModal(false)}
+                                className="px-4 py-2 text-slate-400 hover:text-white transition-colors text-sm font-medium cursor-pointer"
                             >
-                                {submitting ? 'Creating...' : 'Create Apartment'}
+                                Цуцлах
                             </button>
-                        </form>
+                            <button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-6 py-2 rounded-lg font-semibold text-sm transition-colors cursor-pointer"
+                            >
+                                {saving ? 'Хадгалж байна...' : (editId ? 'Хадгалах' : 'Нэмэх')}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

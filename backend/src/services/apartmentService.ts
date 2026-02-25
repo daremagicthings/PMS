@@ -7,12 +7,32 @@ export interface CreateApartmentInput {
     entrance: string;
     floor: number;
     unitNumber: string;
+    unitType?: string;
+    ownerId?: string;
+    tenantId?: string;
+    leaseStartDate?: string | Date;
+    leaseEndDate?: string | Date;
+    contractId?: string;
+}
+
+/** Shape of the update apartment request body */
+export interface UpdateApartmentInput {
+    buildingName?: string;
+    entrance?: string;
+    floor?: number;
+    unitNumber?: string;
+    unitType?: string;
+    ownerId?: string | null;
+    tenantId?: string | null;
+    leaseStartDate?: string | Date | null;
+    leaseEndDate?: string | Date | null;
+    contractId?: string | null;
 }
 
 /**
- * Creates a new apartment unit.
+ * Creates a new apartment/unit.
  *
- * @param input - Apartment details
+ * @param input - Apartment details including optional lease fields
  * @returns The newly created apartment record
  */
 export const createApartment = async (input: CreateApartmentInput): Promise<Apartment> => {
@@ -22,6 +42,50 @@ export const createApartment = async (input: CreateApartmentInput): Promise<Apar
             entrance: input.entrance,
             floor: input.floor,
             unitNumber: input.unitNumber,
+            unitType: input.unitType ?? 'APARTMENT',
+            ownerId: input.ownerId ?? null,
+            tenantId: input.tenantId ?? null,
+            leaseStartDate: input.leaseStartDate ? new Date(input.leaseStartDate) : null,
+            leaseEndDate: input.leaseEndDate ? new Date(input.leaseEndDate) : null,
+            contractId: input.contractId ?? null,
+        },
+    });
+
+    return apartment;
+};
+
+/**
+ * Updates an existing apartment/unit.
+ *
+ * @param id - Apartment UUID
+ * @param input - Fields to update (all optional)
+ * @returns The updated apartment record
+ */
+export const updateApartment = async (id: string, input: UpdateApartmentInput): Promise<Apartment> => {
+    const data: Record<string, unknown> = {};
+
+    if (input.buildingName !== undefined) data.buildingName = input.buildingName;
+    if (input.entrance !== undefined) data.entrance = input.entrance;
+    if (input.floor !== undefined) data.floor = input.floor;
+    if (input.unitNumber !== undefined) data.unitNumber = input.unitNumber;
+    if (input.unitType !== undefined) data.unitType = input.unitType;
+    if (input.ownerId !== undefined) data.ownerId = input.ownerId;
+    if (input.tenantId !== undefined) data.tenantId = input.tenantId;
+    if (input.leaseStartDate !== undefined) {
+        data.leaseStartDate = input.leaseStartDate ? new Date(input.leaseStartDate) : null;
+    }
+    if (input.leaseEndDate !== undefined) {
+        data.leaseEndDate = input.leaseEndDate ? new Date(input.leaseEndDate) : null;
+    }
+    if (input.contractId !== undefined) data.contractId = input.contractId;
+
+    const apartment = await prisma.apartment.update({
+        where: { id },
+        data,
+        include: {
+            residents: {
+                select: { id: true, name: true, phone: true, email: true, role: true },
+            },
         },
     });
 

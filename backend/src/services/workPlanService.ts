@@ -8,6 +8,7 @@ export interface CreateWorkPlanInput {
     status?: WorkPlanStatus;
     expectedDate: string; // ISO date string
     imageUrl?: string;
+    category?: string;
 }
 
 /** Shape of the update work-plan request body */
@@ -17,6 +18,7 @@ export interface UpdateWorkPlanInput {
     status?: WorkPlanStatus;
     expectedDate?: string;
     imageUrl?: string;
+    category?: string;
 }
 
 /**
@@ -33,6 +35,7 @@ export const createWorkPlan = async (input: CreateWorkPlanInput): Promise<WorkPl
             status: input.status || 'PLANNED',
             expectedDate: new Date(input.expectedDate),
             imageUrl: input.imageUrl || null,
+            category: input.category || 'REGULAR',
         },
     });
 };
@@ -67,6 +70,7 @@ export const updateWorkPlan = async (id: string, input: UpdateWorkPlanInput): Pr
             ...(input.status !== undefined && { status: input.status }),
             ...(input.expectedDate !== undefined && { expectedDate: new Date(input.expectedDate) }),
             ...(input.imageUrl !== undefined && { imageUrl: input.imageUrl }),
+            ...(input.category !== undefined && { category: input.category }),
         },
     });
 };

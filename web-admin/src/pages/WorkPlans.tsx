@@ -11,6 +11,13 @@ const STATUS_COLORS: Record<string, string> = {
     COMPLETED: 'bg-green-100 text-green-700',
 };
 
+const CATEGORY_TABS = [
+    { key: '', label: 'Бүгд' },
+    { key: 'REGULAR', label: 'Энгийн' },
+    { key: 'SCHEDULED', label: 'Төлөвлөгөөт' },
+    { key: 'AD_HOC', label: 'Шуурхай' },
+];
+
 /**
  * Admin page for managing building work plans.
  * CRUD with status management and optional image upload.
@@ -20,6 +27,7 @@ export default function WorkPlans() {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editPlan, setEditPlan] = useState<WorkPlan | null>(null);
+    const [activeCategory, setActiveCategory] = useState(''); // '' = all
 
     // Form state
     const [title, setTitle] = useState('');
@@ -27,6 +35,7 @@ export default function WorkPlans() {
     const [status, setStatus] = useState<'PLANNED' | 'IN_PROGRESS' | 'COMPLETED'>('PLANNED');
     const [expectedDate, setExpectedDate] = useState('');
     const [image, setImage] = useState<File | null>(null);
+    const [category, setCategory] = useState('REGULAR');
     const [submitting, setSubmitting] = useState(false);
 
     const fetchPlans = async () => {
@@ -49,6 +58,7 @@ export default function WorkPlans() {
         setStatus('PLANNED');
         setExpectedDate('');
         setImage(null);
+        setCategory('REGULAR');
         setShowModal(true);
     };
 
@@ -59,6 +69,7 @@ export default function WorkPlans() {
         setStatus(plan.status);
         setExpectedDate(plan.expectedDate.slice(0, 10));
         setImage(null);
+        setCategory(plan.category || 'REGULAR');
         setShowModal(true);
     };
 
@@ -71,6 +82,7 @@ export default function WorkPlans() {
             fd.append('description', description);
             fd.append('status', status);
             fd.append('expectedDate', expectedDate);
+            fd.append('category', category);
             if (image) fd.append('image', image);
 
             if (editPlan) {
@@ -124,79 +136,115 @@ export default function WorkPlans() {
                 </button>
             </div>
 
-            {loading ? (
-                <p className="text-slate-400">Loading...</p>
-            ) : plans.length === 0 ? (
-                <div className="text-center py-16 bg-white rounded-xl border border-slate-200">
-                    <ClipboardList size={48} className="mx-auto text-slate-300 mb-3" />
-                    <p className="text-slate-400">No work plans yet. Click "Add Work Plan" to get started.</p>
-                </div>
-            ) : (
-                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-                    <table className="w-full text-sm">
-                        <thead className="bg-slate-50 text-slate-500 uppercase text-xs">
-                            <tr>
-                                <th className="px-5 py-3 text-left">Title</th>
-                                <th className="px-5 py-3 text-left">Description</th>
-                                <th className="px-5 py-3 text-left">Status</th>
-                                <th className="px-5 py-3 text-left">Expected Date</th>
-                                <th className="px-5 py-3 text-left">Image</th>
-                                <th className="px-5 py-3 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {plans.map((plan) => (
-                                <tr key={plan.id} className="hover:bg-slate-50 transition-colors">
-                                    <td className="px-5 py-3 font-medium text-slate-800">{plan.title}</td>
-                                    <td className="px-5 py-3 text-slate-500 max-w-xs truncate">{plan.description}</td>
-                                    <td className="px-5 py-3">
-                                        <select
-                                            value={plan.status}
-                                            onChange={(e) => handleStatusChange(plan, e.target.value)}
-                                            className={`text-xs font-semibold px-2 py-1 rounded-full border-0 cursor-pointer ${STATUS_COLORS[plan.status]}`}
-                                        >
-                                            <option value="PLANNED">Planned</option>
-                                            <option value="IN_PROGRESS">In Progress</option>
-                                            <option value="COMPLETED">Completed</option>
-                                        </select>
-                                    </td>
-                                    <td className="px-5 py-3 text-slate-500">
-                                        {new Date(plan.expectedDate).toLocaleDateString()}
-                                    </td>
-                                    <td className="px-5 py-3">
-                                        {plan.imageUrl ? (
-                                            <img
-                                                src={`${API_ROOT}${plan.imageUrl}`}
-                                                alt="plan"
-                                                className="w-12 h-12 rounded-lg object-cover border border-slate-200"
-                                            />
-                                        ) : (
-                                            <span className="text-slate-300 text-xs">—</span>
-                                        )}
-                                    </td>
-                                    <td className="px-5 py-3 text-right">
-                                        <button
-                                            onClick={() => openEditModal(plan)}
-                                            className="text-slate-400 hover:text-blue-600 mr-2 transition-colors"
-                                            title="Edit"
-                                        >
-                                            <Pencil size={16} />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(plan.id)}
-                                            className="text-slate-400 hover:text-red-600 transition-colors"
-                                            title="Delete"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+            {/* Category Tabs */}
+            <div className="flex gap-2 mb-5">
+                {CATEGORY_TABS.map(tab => {
+                    const count = tab.key
+                        ? plans.filter(p => p.category === tab.key).length
+                        : plans.length;
+                    return (
+                        <button
+                            key={tab.key}
+                            onClick={() => setActiveCategory(tab.key)}
+                            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer ${activeCategory === tab.key
+                                ? 'bg-blue-600 text-white shadow-md'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                                }`}
+                        >
+                            {tab.label} ({count})
+                        </button>
+                    );
+                })}
+            </div>
 
+            {(() => {
+                const filteredPlans = activeCategory
+                    ? plans.filter(p => p.category === activeCategory)
+                    : plans;
+
+                return loading ? (
+                    <p className="text-slate-400">Loading...</p>
+                ) : filteredPlans.length === 0 ? (
+                    <div className="text-center py-16 bg-white rounded-xl border border-slate-200">
+                        <ClipboardList size={48} className="mx-auto text-slate-300 mb-3" />
+                        <p className="text-slate-400">
+                            {activeCategory
+                                ? `"${CATEGORY_TABS.find(t => t.key === activeCategory)?.label}" ангилалд ажлын төлөвлөгөө байхгүй`
+                                : 'No work plans yet. Click "Add Work Plan" to get started.'}
+                        </p>
+                    </div>
+                ) : (
+                    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                        <table className="w-full text-sm">
+                            <thead className="bg-slate-50 text-slate-500 uppercase text-xs">
+                                <tr>
+                                    <th className="px-5 py-3 text-left">Title</th>
+                                    <th className="px-5 py-3 text-left">Description</th>
+                                    <th className="px-5 py-3 text-left">Category</th>
+                                    <th className="px-5 py-3 text-left">Status</th>
+                                    <th className="px-5 py-3 text-left">Expected Date</th>
+                                    <th className="px-5 py-3 text-left">Image</th>
+                                    <th className="px-5 py-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {filteredPlans.map((plan) => (
+                                    <tr key={plan.id} className="hover:bg-slate-50 transition-colors">
+                                        <td className="px-5 py-3 font-medium text-slate-800">{plan.title}</td>
+                                        <td className="px-5 py-3 text-slate-500 max-w-xs truncate">{plan.description}</td>
+                                        <td className="px-5 py-3">
+                                            <span className="text-xs font-semibold px-2 py-1 rounded-full bg-slate-100 text-slate-700">
+                                                {CATEGORY_TABS.find(t => t.key === plan.category)?.label || plan.category}
+                                            </span>
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            <select
+                                                value={plan.status}
+                                                onChange={(e) => handleStatusChange(plan, e.target.value)}
+                                                className={`text-xs font-semibold px-2 py-1 rounded-full border-0 cursor-pointer ${STATUS_COLORS[plan.status]}`}
+                                            >
+                                                <option value="PLANNED">Planned</option>
+                                                <option value="IN_PROGRESS">In Progress</option>
+                                                <option value="COMPLETED">Completed</option>
+                                            </select>
+                                        </td>
+                                        <td className="px-5 py-3 text-slate-500">
+                                            {new Date(plan.expectedDate).toLocaleDateString()}
+                                        </td>
+                                        <td className="px-5 py-3">
+                                            {plan.imageUrl ? (
+                                                <img
+                                                    src={`${API_ROOT}${plan.imageUrl}`}
+                                                    alt="plan"
+                                                    className="w-12 h-12 rounded-lg object-cover border border-slate-200"
+                                                />
+                                            ) : (
+                                                <span className="text-slate-300 text-xs">—</span>
+                                            )}
+                                        </td>
+                                        <td className="px-5 py-3 text-right">
+                                            <button
+                                                onClick={() => openEditModal(plan)}
+                                                className="text-slate-400 hover:text-blue-600 mr-2 transition-colors"
+                                                title="Edit"
+                                            >
+                                                <Pencil size={16} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(plan.id)}
+                                                className="text-slate-400 hover:text-red-600 transition-colors"
+                                                title="Delete"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            })()}
             {/* Create / Edit Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowModal(false)}>
@@ -243,6 +291,20 @@ export default function WorkPlans() {
                                         <option value="COMPLETED">Completed</option>
                                     </select>
                                 </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-600 mb-1">Category</label>
+                                    <select
+                                        value={category}
+                                        onChange={(e) => setCategory(e.target.value)}
+                                        className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    >
+                                        <option value="REGULAR">Энгийн</option>
+                                        <option value="SCHEDULED">Төлөвлөгөөт</option>
+                                        <option value="AD_HOC">Шуурхай</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-600 mb-1">Expected Date</label>
                                     <input

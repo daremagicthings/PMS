@@ -43,6 +43,12 @@ export interface Apartment {
     entrance: string;
     floor: number;
     unitNumber: string;
+    unitType: string;
+    ownerId: string | null;
+    tenantId: string | null;
+    leaseStartDate: string | null;
+    leaseEndDate: string | null;
+    contractId: string | null;
     residents?: User[];
     createdAt: string;
     updatedAt: string;
@@ -62,6 +68,7 @@ export interface User {
 export interface Invoice {
     id: string;
     amount: number;
+    penaltyAmount: number;
     description: string | null;
     status: 'PENDING' | 'PAID' | 'CANCELLED';
     dueDate: string;
@@ -115,6 +122,17 @@ export interface WorkPlan {
     status: 'PLANNED' | 'IN_PROGRESS' | 'COMPLETED';
     expectedDate: string;
     imageUrl: string | null;
+    category: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Vehicle {
+    id: string;
+    licensePlate: string;
+    makeModel: string;
+    apartmentId: string;
+    apartment?: Pick<Apartment, 'id' | 'buildingName' | 'unitNumber' | 'entrance'>;
     createdAt: string;
     updatedAt: string;
 }
@@ -144,8 +162,14 @@ export const authApi = {
 
 export const apartmentApi = {
     getAll: () => api.get<ApiResponse<Apartment[]>>('/apartments'),
-    create: (data: { buildingName: string; entrance: string; floor: number; unitNumber: string }) =>
+    create: (data: {
+        buildingName: string; entrance: string; floor: number; unitNumber: string;
+        unitType?: string; ownerId?: string; tenantId?: string;
+        leaseStartDate?: string; leaseEndDate?: string; contractId?: string;
+    }) =>
         api.post<ApiResponse<Apartment>>('/apartments', data),
+    update: (id: string, data: Partial<Omit<Apartment, 'id' | 'createdAt' | 'updatedAt' | 'residents'>>) =>
+        api.put<ApiResponse<Apartment>>(`/apartments/${id}`, data),
 };
 
 // ─── Users ──────────────────────────────────────────────
@@ -163,6 +187,7 @@ export const invoiceApi = {
     create: (data: { apartmentId: string; amount: number; description?: string; dueDate: string }) =>
         api.post<ApiResponse<Invoice>>('/invoices', data),
     markAsPaid: (id: string) => api.put<ApiResponse<Invoice>>(`/invoices/${id}/pay`),
+    calculatePenalties: () => api.post<ApiResponse<{ penalizedCount: number }>>('/invoices/calculate-penalties'),
 };
 
 // ─── Tickets ────────────────────────────────────────────
@@ -284,6 +309,19 @@ export const pollApi = {
     vote: (pollId: string, userId: string, optionId: string) =>
         api.post<ApiResponse<void>>(`/polls/${pollId}/vote`, { userId, optionId }),
     close: (pollId: string) => api.put<ApiResponse<Poll>>(`/polls/${pollId}/close`),
+};
+
+// ─── Vehicles ───────────────────────────────────────────
+
+export const vehicleApi = {
+    getAll: (search?: string) =>
+        api.get<ApiResponse<Vehicle[]>>(`/vehicles${search ? `?search=${encodeURIComponent(search)}` : ''}`),
+    create: (data: { licensePlate: string; makeModel: string; apartmentId: string }) =>
+        api.post<ApiResponse<Vehicle>>('/vehicles', data),
+    update: (id: string, data: Partial<Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt' | 'apartment'>>) =>
+        api.put<ApiResponse<Vehicle>>(`/vehicles/${id}`, data),
+    delete: (id: string) =>
+        api.delete<ApiResponse<void>>(`/vehicles/${id}`),
 };
 
 export default api;

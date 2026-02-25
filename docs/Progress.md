@@ -234,5 +234,48 @@
 
 ---
 
-## Next: Phase 9+ (Roadmap)
-- **Phase 9:** AI chatbot for common resident questions.
+## Phase 9: UX/UI Refactoring — ✅ COMPLETED
+**Date:** 2026-02-25
+
+### Task 9.1 — Material Top Tab Navigator
+- Replaced custom segmented control in `CommunityScreen.tsx` with `@react-navigation/material-top-tabs`.
+- Swipeable gesture navigation between "📢 Зарлал" (Announcements) and "🗳️ Санал" (Polls).
+- Dark tab bar styling matches app header (`#0f172a` background, `#3b82f6` indicator).
+- Installed `@react-navigation/material-top-tabs` + `react-native-pager-view`.
+
+### Task 9.2 — Profile Relocated (verified existing)
+- Header avatar button already in place from prior session. Confirmed working.
+
+### Task 9.3 — UI Polish
+- `HomeScreen.tsx` card shadows enhanced: deeper colored shadows (`#64748b`), increased `shadowOpacity: 0.08`, `shadowRadius: 10`, `elevation: 4`, subtle `borderColor: #f1f5f9` border.
+- Balance card shadow upgraded to `#1e3a5f` color, `elevation: 8`.
+- Transparency screen image fix (aspectRatio + cover) already in place.
+
+---
+
+## Phase 10: Advanced Lease & Property Management — ✅ COMPLETED
+**Date:** 2026-02-25
+
+### Task 10.1 — Schema & Migration
+- Added 6 fields to `Apartment` model: `unitType` (default "APARTMENT"), `ownerId`, `tenantId`, `leaseStartDate`, `leaseEndDate`, `contractId`.
+- Migration `advanced_property` applied.
+
+### Task 10.2 — Backend Service & Controller
+- `apartmentService.ts` — Extended `CreateApartmentInput` with all lease fields. Added `UpdateApartmentInput` interface and `updateApartment()` function.
+- `apartmentController.ts` — Added `updateApartmentController` for PUT requests.
+- `apartmentRoutes.ts` — Added `PUT /:id` route.
+
+### Task 10.3 — Web Admin UI
+- `api.ts` — `Apartment` interface extended with 6 new fields. `apartmentApi.update()` added. `create()` signature extended.
+- `Residents.tsx` — Complete rebuild:
+  - **Tabs:** "🏠 Орон сууц" (Apartments) and "📋 Түрээсийн талбай" (Leased Spaces: MUSAR/BASEMENT) with count badges.
+  - **Table:** Leased tab shows owners, tenants, lease periods. Both tabs have per-row Edit buttons.
+  - **Modal:** Unit type selector, Owner/Tenant user dropdowns, lease date pickers, contract ID input.
+  - **Empty states:** Custom illustrations for each tab.
+
+---
+
+## Next: Phase 11+ (Roadmap)
+- **Phase 11:** Advanced Billing & Penalties.
+- **Phase 12:** Operations, Vehicles & Content.
+- **Phase 13:** AI Chatbot.

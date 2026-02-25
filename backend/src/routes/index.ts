@@ -11,6 +11,7 @@ import workPlanRoutes from './workPlanRoutes';
 import financialReportRoutes from './financialReportRoutes';
 import webhookRoutes from './webhookRoutes';
 import pollRoutes from './pollRoutes';
+import vehicleRoutes from './vehicleRoutes';
 
 /**
  * Central route aggregator.
@@ -48,6 +49,9 @@ router.use('/financial-reports', financialReportRoutes);
 
 // ─── Polls (Digital Voting) ─────────────────────────────
 router.use('/polls', pollRoutes);
+
+// ─── Vehicles ───────────────────────────────────────────
+router.use('/vehicles', vehicleRoutes);
 
 // ─── Webhooks (Public — external payment callbacks) ─────
 router.use('/webhooks/qpay', webhookRoutes);

@@ -64,6 +64,72 @@ export const getAllInvoices = async (): Promise<Invoice[]> => {
 };
 
 /**
+ * Retrieves invoices visible to a specific resident.
+ * Dual visibility: shows invoices where the resident is either the
+ * ownerId OR the tenantId of the linked apartment.
+ * Constitution: Residents can only see their own financial data.
+ */
+export const getInvoicesForResident = async (userId: string): Promise<Invoice[]> => {
+    const invoices = await prisma.invoice.findMany({
+        where: {
+            apartment: {
+                OR: [
+                    { ownerId: userId },
+                    { tenantId: userId },
+                    { residents: { some: { id: userId } } },
+                ],
+            },
+        },
+        include: {
+            apartment: {
+                select: {
+                    id: true,
+                    buildingName: true,
+                    unitNumber: true,
+                    entrance: true,
+                    floor: true,
+                },
+            },
+        },
+        orderBy: { createdAt: 'desc' },
+    });
+
+    return invoices;
+};
+
+/**
+ * Calculates and applies penalties to all overdue PENDING invoices.
+ * Adds a flat 5000 MNT penalty to each.
+ * Constitution: Penalties must be transparent — logged and visible to residents.
+ *
+ * @returns Number of invoices penalized
+ */
+export const calculatePenalties = async (): Promise<{ penalizedCount: number }> => {
+    const now = new Date();
+    const overdueInvoices = await prisma.invoice.findMany({
+        where: {
+            status: 'PENDING',
+            dueDate: { lt: now },
+        },
+    });
+
+    const FLAT_PENALTY = 5000; // 5000 MNT
+
+    let penalizedCount = 0;
+    for (const inv of overdueInvoices) {
+        await prisma.invoice.update({
+            where: { id: inv.id },
+            data: {
+                penaltyAmount: inv.penaltyAmount + FLAT_PENALTY,
+            },
+        });
+        penalizedCount++;
+    }
+
+    return { penalizedCount };
+};
+
+/**
  * Marks an invoice as PAID with the current timestamp.
  * Constitution: Never hard-delete a paid invoice — use status flags instead.
  *

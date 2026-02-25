@@ -60,3 +60,33 @@ This file tracks the step-by-step development tasks. The AI Agent must pick task
 
 ## Phase 9: AI (Upcoming)
 - [ ] **Task 9.1:** AI Chatbot: Integrate a smart assistant on the Mobile app to answer common resident questions automatically.
+
+# Development Tasks / Backlog
+
+This file tracks the step-by-step development tasks. The AI Agent must pick tasks sequentially and check them off `[x]` when fully implemented and tested.
+
+## Phase 1 to Phase 8: Foundation to E-Barimt
+- [x] Foundation, Core APIs, Web Admin, Mobile App, Ticketing, Analytics, Transparency, QPay, Password Change, Voting, and E-Barimt are all COMPLETE.
+
+## Phase 9: UX/UI Refactoring (Дизайн сайжруулалт)
+- [x] **Task 9.1:** Bottom Navigation Restructure: Reduce from 6 tabs to 4 tabs (Нүүр, Хүсэлт, Мэдээ, Шилэн СӨХ). Combine "Зарлал" and "Санал" into a Material Top Tab Navigator under "Мэдээ".
+- [x] **Task 9.2:** Profile Relocation: Remove "Бүртгэл" from bottom tabs. Add a User Avatar icon to the top-right header of the Home screen that opens the Account modal/screen.
+- [x] **Task 9.3:** Image & Card Polish: Fix squished images in the "Шилэн СӨХ" screen (use `resizeMode: "cover"` and correct aspect ratios). Add soft shadows and rounded corners (12px or 16px) to all cards for a modern look.
+
+## Phase 10: Advanced Lease & Property Management (Түрээс ба Талбай)
+- [x] **Task 10.1:** Unit Types: Update `Apartment` model in Prisma to support `unitType` (APARTMENT, MUSAR, BASEMENT). Add lease fields: `leaseStartDate`, `leaseEndDate`, `contractId`. 
+- [x] **Task 10.2:** Owner vs Tenant: Update `Apartment` model to have both `ownerId` and `tenantId`. 
+- [x] **Task 10.3:** Web Admin UI: Update "Residents" page with Tabs to visually separate "Apartments" and "Leased Spaces". Add forms to manage lease dates and assign both owner and tenant.
+
+## Phase 11: Advanced Billing & Penalties (Төлбөр ба Алданги)
+- [ ] **Task 11.1:** Dual Visibility: Update `GET /api/invoices` so BOTH the owner and the tenant can see the invoices for their linked apartment on their mobile apps.
+- [ ] **Task 11.2:** Late Penalties (Алданги): Add `penaltyAmount` to the `Invoice` model. Create an endpoint to calculate/add penalties for past-due invoices.
+- [ ] **Task 11.3:** Mobile UI Breakdown: Display the penalty amount clearly in red on the Mobile App's Home screen and Invoice details.
+
+## Phase 12: Operations, Vehicles & Content (Үйл ажиллагаа ба Мэдээлэл)
+- [ ] **Task 12.1:** Vehicle Registry: Add a `Vehicle` model (licensePlate, make/model) linked to `Apartment`. Create Web Admin UI to search and manage vehicles (crucial for parking disputes).
+- [ ] **Task 12.2:** Categorized Work Plans: Update `WorkPlan` model with a `category` enum (REGULAR, SCHEDULED, AD_HOC). Update Web Admin UI to filter tasks by these tabs.
+- [ ] **Task 12.3:** Mobile Static Content: Add menu items in the Account section for "СӨХ-ийн дүрэм журам" (Rules), "Түгээмэл асуултууд" (FAQ), and "Лавлагаа" (Inquiries) with clean text UI.
+
+## Phase 13: AI Chatbot (Upcoming)
+- [ ] **Task 13.1:** Integrate Gemini API for smart resident assistance.
