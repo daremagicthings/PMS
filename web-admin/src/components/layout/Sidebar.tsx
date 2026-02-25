@@ -10,6 +10,7 @@ import {
     BarChart3,
     Vote,
     Car,
+    FileText,
 } from 'lucide-react';
 
 /**
@@ -25,6 +26,7 @@ const navItems = [
     { to: '/financials', label: 'Financials', icon: BarChart3 },
     { to: '/polls', label: 'Polls', icon: Vote },
     { to: '/vehicles', label: 'Vehicles', icon: Car },
+    { to: '/content', label: 'Мэдээлэл', icon: FileText },
 ];
 
 /**

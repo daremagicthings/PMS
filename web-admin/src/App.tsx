@@ -10,6 +10,7 @@ import WorkPlans from './pages/WorkPlans';
 import Financials from './pages/Financials';
 import Polls from './pages/Polls';
 import Vehicles from './pages/Vehicles';
+import ContentSetup from './pages/ContentSetup';
 
 /**
  * Root application component with client-side routing.
@@ -29,10 +30,9 @@ export default function App() {
           <Route path="/financials" element={<Financials />} />
           <Route path="/polls" element={<Polls />} />
           <Route path="/vehicles" element={<Vehicles />} />
+          <Route path="/content" element={<ContentSetup />} />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
-
-

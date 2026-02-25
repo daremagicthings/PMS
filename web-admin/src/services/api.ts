@@ -324,4 +324,38 @@ export const vehicleApi = {
         api.delete<ApiResponse<void>>(`/vehicles/${id}`),
 };
 
+// ─── Dynamic Content ────────────────────────────────────
+
+export interface Faq {
+    id: string;
+    question: string;
+    answer: string;
+    order: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface StaticContent {
+    id: string;
+    type: string;
+    title: string;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export const contentApi = {
+    getFaqs: () => api.get<ApiResponse<Faq[]>>('/content/faqs'),
+    createFaq: (data: { question: string; answer: string; order?: number }) =>
+        api.post<ApiResponse<Faq>>('/content/faqs', data),
+    updateFaq: (id: string, data: { question?: string; answer?: string; order?: number }) =>
+        api.put<ApiResponse<Faq>>(`/content/faqs/${id}`, data),
+    deleteFaq: (id: string) => api.delete<ApiResponse<void>>(`/content/faqs/${id}`),
+
+    getStaticContent: (type: string) =>
+        api.get<ApiResponse<StaticContent>>(`/content/static/${type}`),
+    upsertStaticContent: (type: string, data: { title: string; content: string }) =>
+        api.put<ApiResponse<StaticContent>>(`/content/static/${type}`, data),
+};
+
 export default api;

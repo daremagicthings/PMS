@@ -90,3 +90,18 @@ This file tracks the step-by-step development tasks. The AI Agent must pick task
 
 ## Phase 13: AI Chatbot (Upcoming)
 - [ ] **Task 13.1:** Integrate Gemini API for smart resident assistance.
+
+## Phase 14: Mobile App UX/UI & Resident Features
+- [ ] **Task 14.1:** Multi-Property Management: Backend `GET /api/apartments/my-apartments` to fetch all properties linked to the user. Mobile App `HomeScreen` carousel to switch between properties and filter invoices/tickets.
+- [ ] **Task 14.2:** Bulk Invoice Payment & Breakdown: Mobile checkboxes for unpaid invoices, floating "Pay Total" button. Expandable invoice breakdown UI. Backend `POST /api/invoices/qpay-bulk` to handle multiple invoices.
+- [ ] **Task 14.3:** Corporate vs Citizen E-Barimt: Add `ebarimtType` and `ebarimtRegNo` to `User` model. Create API to update. Add settings UI in Mobile `AccountScreen`.
+- [ ] **Task 14.4:** Tickets UI Polish: Top tabs (New, Resolved, Cancelled) and a Floating Action Button (FAB) for new tickets in Mobile App.
+- [ ] **Task 14.5:** Contacts Directory: `ContactDirectory` model + CRUD. Web Admin page to manage. Mobile App screen to view and call numbers.
+
+## Phase 15: Advanced Admin Operations & Accounting
+- [ ] **Task 15.1:** Expanded Unit Types: Add PARKING, STORAGE to `unitType`. Add `parentApartmentId`. Web admin UI updates.
+- [ ] **Task 15.2:** Excel Import for Bulk Invoicing: `POST /api/invoices/bulk-import` to parse `.xlsx` and create invoices. Web Admin dropzone UI.
+- [ ] **Task 15.3:** Manual Bank Statement Reconciliation: `BankStatement` model. Excel upload. Split-screen Web Admin UI to match un-matched bank transfers with unpaid invoices.
+- [ ] **Task 15.4:** Detailed Transaction Transparency: `FinancialTransaction` model linked to Monthly Reports. Mobile timeline view.
+- [ ] **Task 15.5:** Downloadable PDF Reports: Generate PDF for monthly financial transparency.
+- [ ] **Task 15.6:** Advanced Invoice Management (Export & Filter): Update Web Admin `Invoices` page with advanced filtering (Paid/Pending/Overdue, Date Range) and an "Export to Excel" (`xlsx` download) feature for accountants.

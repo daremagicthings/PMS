@@ -12,6 +12,7 @@ import financialReportRoutes from './financialReportRoutes';
 import webhookRoutes from './webhookRoutes';
 import pollRoutes from './pollRoutes';
 import vehicleRoutes from './vehicleRoutes';
+import contentRoutes from './contentRoutes';
 
 /**
  * Central route aggregator.
@@ -53,11 +54,10 @@ router.use('/polls', pollRoutes);
 // ─── Vehicles ───────────────────────────────────────────
 router.use('/vehicles', vehicleRoutes);
 
+// ─── Dynamic Content (FAQ, Rules, Inquiries) ────────────
+router.use('/content', contentRoutes);
+
 // ─── Webhooks (Public — external payment callbacks) ─────
 router.use('/webhooks/qpay', webhookRoutes);
 
 export default router;
-
-
-
-

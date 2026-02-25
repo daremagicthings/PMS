@@ -310,5 +310,28 @@
 
 ---
 
+## Phase 12B: Dynamic Content (FAQ & Rules) — ✅ COMPLETED
+**Date:** 2026-02-25
+
+### Task 12B.1 — Schema & Migrations
+- Added `StaticContent` model (for Rules & Inquiries, singletons by `type`).
+- Added `Faq` model (`question`, `answer`, `order`).
+- Completed migration `dynamic_content`.
+
+### Task 12B.2 — Backend APIs
+- Created `contentRoutes.ts`, `contentController.ts`, `contentService.ts`.
+- `GET /api/content/faqs` and `GET /api/content/static/:type` (Public/Residents).
+- `PUT/POST/DELETE` endpoints (Admin only).
+
+### Task 12B.3 — Web Admin UI
+- Built `ContentSetup.tsx` page to let Admins dynamically create/edit FAQ lists and update the large text blocks for "Rules" and "Inquiries".
+- Added "Мэдээлэл" to Sidebar.
+
+### Task 12B.4 — Mobile Integration
+- Replaced hardcoded `Alert` messages in `AccountScreen.tsx`.
+- The Mobile App now fetches real-time content from the DB for `FAQ`, `RULES`, and `INQUIRIES` when the user taps on the respective menu rows.
+
+---
+
 ## Next: Phase 13+ (Roadmap)
 - **Phase 13:** AI Chatbot.
