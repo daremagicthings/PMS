@@ -79,14 +79,14 @@ This file tracks the step-by-step development tasks. The AI Agent must pick task
 - [x] **Task 10.3:** Web Admin UI: Update "Residents" page with Tabs to visually separate "Apartments" and "Leased Spaces". Add forms to manage lease dates and assign both owner and tenant.
 
 ## Phase 11: Advanced Billing & Penalties (Төлбөр ба Алданги)
-- [ ] **Task 11.1:** Dual Visibility: Update `GET /api/invoices` so BOTH the owner and the tenant can see the invoices for their linked apartment on their mobile apps.
-- [ ] **Task 11.2:** Late Penalties (Алданги): Add `penaltyAmount` to the `Invoice` model. Create an endpoint to calculate/add penalties for past-due invoices.
-- [ ] **Task 11.3:** Mobile UI Breakdown: Display the penalty amount clearly in red on the Mobile App's Home screen and Invoice details.
+- [x] **Task 11.1:** Dual Visibility: Update `GET /api/invoices` so BOTH the owner and the tenant can see the invoices for their linked apartment on their mobile apps.
+- [x] **Task 11.2:** Late Penalties (Алданги): Add `penaltyAmount` to the `Invoice` model. Create an endpoint to calculate/add penalties for past-due invoices.
+- [x] **Task 11.3:** Mobile UI Breakdown: Display the penalty amount clearly in red on the Mobile App's Home screen and Invoice details.
 
 ## Phase 12: Operations, Vehicles & Content (Үйл ажиллагаа ба Мэдээлэл)
-- [ ] **Task 12.1:** Vehicle Registry: Add a `Vehicle` model (licensePlate, make/model) linked to `Apartment`. Create Web Admin UI to search and manage vehicles (crucial for parking disputes).
-- [ ] **Task 12.2:** Categorized Work Plans: Update `WorkPlan` model with a `category` enum (REGULAR, SCHEDULED, AD_HOC). Update Web Admin UI to filter tasks by these tabs.
-- [ ] **Task 12.3:** Mobile Static Content: Add menu items in the Account section for "СӨХ-ийн дүрэм журам" (Rules), "Түгээмэл асуултууд" (FAQ), and "Лавлагаа" (Inquiries) with clean text UI.
+- [x] **Task 12.1:** Vehicle Registry: Add a `Vehicle` model (licensePlate, make/model) linked to `Apartment`. Create Web Admin UI to search and manage vehicles (crucial for parking disputes).
+- [x] **Task 12.2:** Categorized Work Plans: Update `WorkPlan` model with a `category` enum (REGULAR, SCHEDULED, AD_HOC). Update Web Admin UI to filter tasks by these tabs.
+- [x] **Task 12.3:** Mobile Static Content: Add menu items in the Account section for "СӨХ-ийн дүрэм журам" (Rules), "Түгээмэл асуултууд" (FAQ), and "Лавлагаа" (Inquiries) with clean text UI.
 
 ## Phase 13: AI Chatbot (Upcoming)
 - [ ] **Task 13.1:** Integrate Gemini API for smart resident assistance.

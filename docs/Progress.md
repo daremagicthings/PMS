@@ -275,7 +275,40 @@
 
 ---
 
-## Next: Phase 11+ (Roadmap)
-- **Phase 11:** Advanced Billing & Penalties.
-- **Phase 12:** Operations, Vehicles & Content.
+## Phase 11: Advanced Billing & Penalties — ✅ COMPLETED
+**Date:** 2026-02-25
+
+### Task 11.1 — Schema & Migrations
+- Added `penaltyAmount` (Float, default 0) to `Invoice` model.
+- Completed migration `billing_vehicles`.
+
+### Task 11.2 — Backend APIs
+- Updated `GET /api/invoices` (`getInvoicesForResident`) to allow dual visibility (both `ownerId` and `tenantId` can view the invoice).
+- Created `POST /api/invoices/calculate-penalties` (Admin only) to append a flat 5,000 MNT penalty.
+
+### Task 11.3 — Mobile UI Update
+- Displayed total penalty clearly in red text (`#ef4444`) on the Mobile App's Home Screen balance card.
+- Updated individual invoice UI to display `+₮X торгууль` in red below the total amount.
+
+---
+
+## Phase 12: Operations, Vehicles & Content — ✅ COMPLETED
+**Date:** 2026-02-25
+
+### Task 12.1 — Vehicle Registry
+- Added `Vehicle` model (`licensePlate`, `makeModel`) to the Prisma schema, mapped to `Apartment`.
+- Implemented backend CRUD endpoints (`/api/vehicles`).
+- Built Web Admin "Vehicles" (Автомашин) Page to filter, add, and update registered vehicles.
+
+### Task 12.2 — Enhanced Work Plans
+- Added `category` field ("REGULAR", "SCHEDULED", "AD_HOC") to `WorkPlan` model.
+- Updated the Web Admin "Work Plans" UI to support editing categories directly.
+
+### Task 12.3 — Mobile Static Content
+- Added "Дүрэм журам", "Түгээмэл асуултууд", and "Санал хүсэлт" menu list options to the `AccountScreen.tsx`.
+- Integrated `Alert`-based static native pop-ups with dummy text for easy reading.
+
+---
+
+## Next: Phase 13+ (Roadmap)
 - **Phase 13:** AI Chatbot.
