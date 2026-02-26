@@ -31,7 +31,7 @@ export const createContact = async (req: Request, res: Response) => {
 
 export const updateContact = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const id = req.params.id as string;
         const name = req.body.name as string | undefined;
         const phone = req.body.phone as string | undefined;
         const role = req.body.role as string | undefined;
@@ -47,7 +47,7 @@ export const updateContact = async (req: Request, res: Response) => {
 
 export const deleteContact = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const id = req.params.id as string;
         await contactService.deleteContact(id);
         res.json({ success: true, message: 'Contact deleted successfully' });
     } catch (error) {
