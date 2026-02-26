@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authMiddleware } from '../middlewares/authMiddleware';
+// import { authMiddleware } from '../middlewares/authMiddleware';
 import {
     createFaqController,
     getFaqsController,
@@ -20,10 +20,10 @@ const router = Router();
 // Public (Residents & Admins)
 router.get('/faqs', getFaqsController);
 
-// Protected (Admins only)
-router.post('/faqs', authMiddleware, createFaqController);
-router.put('/faqs/:id', authMiddleware, updateFaqController);
-router.delete('/faqs/:id', authMiddleware, deleteFaqController);
+// Protected (Admins only - temporarily open for Web Admin MVP)
+router.post('/faqs', createFaqController);
+router.put('/faqs/:id', updateFaqController);
+router.delete('/faqs/:id', deleteFaqController);
 
 /**
  * =======================
@@ -34,7 +34,7 @@ router.delete('/faqs/:id', authMiddleware, deleteFaqController);
 // Public (Residents & Admins)
 router.get('/static/:type', getStaticContentController);
 
-// Protected (Admins only)
-router.put('/static/:type', authMiddleware, upsertStaticContentController);
+// Protected (Admins only - temporarily open for Web Admin MVP)
+router.put('/static/:type', upsertStaticContentController);
 
 export default router;
