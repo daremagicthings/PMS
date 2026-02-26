@@ -11,6 +11,7 @@ import Financials from './pages/Financials';
 import Polls from './pages/Polls';
 import Vehicles from './pages/Vehicles';
 import ContentSetup from './pages/ContentSetup';
+import Contacts from './pages/Contacts';
 
 /**
  * Root application component with client-side routing.
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/polls" element={<Polls />} />
           <Route path="/vehicles" element={<Vehicles />} />
           <Route path="/content" element={<ContentSetup />} />
+          <Route path="/contacts" element={<Contacts />} />
         </Route>
       </Routes>
     </BrowserRouter>

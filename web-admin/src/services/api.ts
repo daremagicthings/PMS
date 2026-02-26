@@ -358,4 +358,25 @@ export const contentApi = {
         api.put<ApiResponse<StaticContent>>(`/content/static/${type}`, data),
 };
 
+// ─── Contacts Directory ─────────────────────────────────
+
+export interface Contact {
+    id: string;
+    name: string;
+    phone: string;
+    role: string;
+    description: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export const contactApi = {
+    getAll: () => api.get<ApiResponse<Contact[]>>('/contacts'),
+    create: (data: { name: string; phone: string; role: string; description?: string }) =>
+        api.post<ApiResponse<Contact>>('/contacts', data),
+    update: (id: string, data: { name?: string; phone?: string; role?: string; description?: string }) =>
+        api.put<ApiResponse<Contact>>(`/contacts/${id}`, data),
+    delete: (id: string) => api.delete<ApiResponse<void>>(`/contacts/${id}`),
+};
+
 export default api;

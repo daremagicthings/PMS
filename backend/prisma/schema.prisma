@@ -54,6 +54,11 @@ model User {
   passwordHash    String
   expoPushToken   String?
 
+  /// E-Barimt Receipt Type: CITIZEN or ENTITY
+  ebarimtType     String   @default("CITIZEN")
+  /// E-Barimt Registry Number (Company TTDD or Person ID)
+  ebarimtRegNo    String?
+
   apartment   Apartment? @relation(fields: [apartmentId], references: [id], onDelete: SetNull)
   apartmentId String?
 
@@ -317,6 +322,20 @@ model StaticContent {
   updatedAt DateTime @updatedAt
 
   @@map("static_content")
+}
+
+/// Represents a directory of important contacts (Plumber, Electrician, etc.)
+model Contact {
+  id          String   @id @default(uuid())
+  name        String
+  phone       String
+  role        String
+  description String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("contacts")
 }
 
 /// Represents Frequently Asked Questions

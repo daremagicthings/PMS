@@ -106,3 +106,38 @@ export const updatePushTokenController = async (
     }
 };
 
+/**
+ * Controller for PUT /api/users/ebarimt-settings
+ * Updates E-Barimt configurations (CITIZEN vs ENTITY and Registry Number).
+ * Requires authMiddleware to set req.user.
+ */
+export const updateEbarimtSettingsController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const userId = (req as any).user?.userId;
+        const { ebarimtType, ebarimtRegNo } = req.body as { ebarimtType: string; ebarimtRegNo?: string };
+
+        if (!ebarimtType || (ebarimtType !== 'CITIZEN' && ebarimtType !== 'ENTITY')) {
+            res.status(400).json({
+                success: false,
+                message: 'ebarimtType must be CITIZEN or ENTITY',
+            });
+            return;
+        }
+
+        const { updateEbarimtSettings } = await import('../services/userService');
+        const user = await updateEbarimtSettings(userId, ebarimtType, ebarimtRegNo || null);
+
+        res.status(200).json({
+            success: true,
+            message: 'E-Barimt settings updated successfully',
+            data: user,
+        });
+    } catch (error) {
+        next(error instanceof Error ? error : new Error('Unknown error'));
+    }
+};
+

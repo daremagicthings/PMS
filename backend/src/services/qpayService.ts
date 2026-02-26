@@ -120,6 +120,60 @@ export const generateQpayInvoice = async (invoiceId: string): Promise<QpayInvoic
 };
 
 /**
+ * Generates a mock QPay invoice for multiple system invoices (bulk payment).
+ *
+ * @param invoiceIds - UUIDs of the invoices to pay together
+ * @returns QPay invoice data including QR code and deep links
+ */
+export const generateBulkQpayInvoice = async (invoiceIds: string[]): Promise<QpayInvoiceResult> => {
+    if (!invoiceIds || invoiceIds.length === 0) {
+        throw new Error('No invoices provided for bulk payment');
+    }
+
+    const invoices = await prisma.invoice.findMany({
+        where: { id: { in: invoiceIds } },
+    });
+
+    if (invoices.length !== invoiceIds.length) {
+        throw new Error('One or more invoices were not found');
+    }
+
+    for (const inv of invoices) {
+        if (inv.status === InvoiceStatus.PAID) {
+            throw new Error(`Invoice ${inv.id} is already paid`);
+        }
+        if (inv.status === InvoiceStatus.CANCELLED) {
+            throw new Error(`Invoice ${inv.id} is cancelled`);
+        }
+    }
+
+    const qpayInvoiceId = `QPAY-BULK-${uuidv4().substring(0, 8).toUpperCase()}`;
+    const qpayUrl = `qpay://invoice/${qpayInvoiceId}`;
+
+    await prisma.invoice.updateMany({
+        where: { id: { in: invoiceIds } },
+        data: {
+            qpayInvoiceId,
+            qpayUrl,
+        },
+    });
+
+    // Return the first one as representative.
+    const updatedInvoice = await prisma.invoice.findFirst({ where: { id: invoiceIds[0] } });
+
+    return {
+        qpayInvoiceId,
+        qpayUrl,
+        qrBase64: await generateQrBase64(`https://qpay.mn/payment/${qpayInvoiceId}`),
+        deepLinks: MOCK_BANK_DEEP_LINKS.map((bank) => ({
+            ...bank,
+            link: `${bank.link}${qpayInvoiceId}`,
+        })),
+        invoice: updatedInvoice as Invoice,
+    };
+};
+
+/**
  * Processes a QPay webhook callback when a payment is confirmed.
  * In production, you would verify the QPay signature/secret before processing.
  *
@@ -128,35 +182,35 @@ export const generateQpayInvoice = async (invoiceId: string): Promise<QpayInvoic
  * @throws Error if the QPay invoice ID is not found or invoice already paid
  */
 export const processQpayWebhook = async (qpayInvoiceId: string): Promise<Invoice> => {
-    const invoice = await prisma.invoice.findFirst({
+    const invoices = await prisma.invoice.findMany({
         where: { qpayInvoiceId },
     });
 
-    if (!invoice) {
+    if (invoices.length === 0) {
         throw new Error(`No invoice found for QPay ID: ${qpayInvoiceId}`);
     }
 
-    if (invoice.status === InvoiceStatus.PAID) {
-        // Idempotent — QPay may retry webhooks
-        return invoice;
-    }
-
-    if (invoice.status === InvoiceStatus.CANCELLED) {
-        throw new Error('Cannot mark a cancelled invoice as paid');
-    }
-
-    const updated = await prisma.invoice.update({
-        where: { id: invoice.id },
-        data: {
-            status: 'PAID',
-            paidAt: new Date(),
-        },
-    });
-
-    // Fire-and-forget: auto-generate E-Barimt for the paid invoice
-    generateEbarimt(updated.id).catch((err) =>
-        console.error('E-Barimt auto-generation failed:', err)
+    const unpaidInvoices = invoices.filter(
+        (inv) => inv.status !== InvoiceStatus.PAID && inv.status !== InvoiceStatus.CANCELLED
     );
 
-    return updated;
+    if (unpaidInvoices.length > 0) {
+        await prisma.invoice.updateMany({
+            where: { id: { in: unpaidInvoices.map((i) => i.id) } },
+            data: {
+                status: 'PAID',
+                paidAt: new Date(),
+            },
+        });
+
+        // Fire-and-forget: auto-generate E-Barimt for the paid invoices
+        for (const inv of unpaidInvoices) {
+            generateEbarimt(inv.id).catch((err) =>
+                console.error(`E-Barimt auto-generation failed for invoice ${inv.id}:`, err)
+            );
+        }
+    }
+
+    const updated = await prisma.invoice.findFirst({ where: { qpayInvoiceId } });
+    return updated as Invoice;
 };

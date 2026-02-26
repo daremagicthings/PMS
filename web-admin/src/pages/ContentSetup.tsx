@@ -49,7 +49,13 @@ export default function ContentSetup() {
                 setRulesContent(rulesRes.data.data);
                 setRulesText(rulesRes.data.data.content);
             }
+        } catch (error: any) {
+            if (error.response?.status !== 404) {
+                console.error('Error fetching RULES content:', error);
+            }
+        }
 
+        try {
             const inqRes = await contentApi.getStaticContent('INQUIRIES');
             if (inqRes.data.success && inqRes.data.data) {
                 setInquiriesContent(inqRes.data.data);
@@ -57,11 +63,10 @@ export default function ContentSetup() {
             }
         } catch (error: any) {
             if (error.response?.status !== 404) {
-                console.error('Error fetching static content:', error);
+                console.error('Error fetching INQUIRIES content:', error);
             }
-        } finally {
-            setLoadingStatic(false);
         }
+        setLoadingStatic(false);
     };
 
     const handleCreateFaq = async () => {

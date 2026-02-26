@@ -25,6 +25,12 @@ router.put('/:id/pay', markInvoiceAsPaidController);
 /** POST /api/invoices/:id/qpay — Generate QPay invoice with QR + deep links */
 router.post('/:id/qpay', createQpayInvoiceController);
 
+/** POST /api/invoices/qpay-bulk — Generate QPay bulk invoice */
+router.post('/qpay-bulk', async (req, res, next) => {
+    const { createBulkQpayInvoiceController } = await import('../controllers/qpayController');
+    createBulkQpayInvoiceController(req, res, next);
+});
+
 /** GET /api/invoices/:id/ebarimt — Get or generate E-Barimt receipt */
 router.get('/:id/ebarimt', getEbarimtController);
 

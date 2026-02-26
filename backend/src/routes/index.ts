@@ -13,6 +13,7 @@ import webhookRoutes from './webhookRoutes';
 import pollRoutes from './pollRoutes';
 import vehicleRoutes from './vehicleRoutes';
 import contentRoutes from './contentRoutes';
+import contactRoutes from './contactRoutes';
 
 /**
  * Central route aggregator.
@@ -56,6 +57,9 @@ router.use('/vehicles', vehicleRoutes);
 
 // ─── Dynamic Content (FAQ, Rules, Inquiries) ────────────
 router.use('/content', contentRoutes);
+
+// ─── Contacts Directory ─────────────────────────────────
+router.use('/contacts', contactRoutes);
 
 // ─── Webhooks (Public — external payment callbacks) ─────
 router.use('/webhooks/qpay', webhookRoutes);

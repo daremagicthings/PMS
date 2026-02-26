@@ -11,6 +11,7 @@ import {
     Vote,
     Car,
     FileText,
+    BookUser,
 } from 'lucide-react';
 
 /**
@@ -27,6 +28,7 @@ const navItems = [
     { to: '/polls', label: 'Polls', icon: Vote },
     { to: '/vehicles', label: 'Vehicles', icon: Car },
     { to: '/content', label: 'Мэдээлэл', icon: FileText },
+    { to: '/contacts', label: 'Харилцах', icon: BookUser },
 ];
 
 /**

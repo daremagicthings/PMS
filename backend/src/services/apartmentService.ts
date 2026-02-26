@@ -115,3 +115,24 @@ export const getAllApartments = async (): Promise<Apartment[]> => {
 
     return apartments;
 };
+
+/**
+ * Retrieves all apartments linked to a specific user (either as a resident, owner, or tenant).
+ *
+ * @param userId - ID of the user
+ * @returns Array of apartments linked to the user
+ */
+export const getMyApartments = async (userId: string): Promise<Apartment[]> => {
+    const apartments = await prisma.apartment.findMany({
+        where: {
+            OR: [
+                { residents: { some: { id: userId } } }, // Legacy/resident approach
+                { ownerId: userId },                     // Explicit owner
+                { tenantId: userId },                    // Explicit tenant
+            ],
+        },
+        orderBy: { buildingName: 'asc', unitNumber: 'asc' },
+    });
+
+    return apartments;
+};

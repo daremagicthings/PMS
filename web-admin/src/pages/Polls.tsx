@@ -10,7 +10,7 @@ const BAR_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b
 
 /**
  * Admin Polls page — create, monitor, and close digital votes.
- * Premium dark theme with voter details.
+ * Light theme with voter details matching the main Dashboard.
  */
 export default function Polls() {
     const [polls, setPolls] = useState<Poll[]>([]);
@@ -101,8 +101,8 @@ export default function Polls() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-white">📊 Санал асуулга</h1>
-                    <p className="text-slate-400 text-sm mt-1">Create and manage resident polls</p>
+                    <h1 className="text-2xl font-bold text-slate-900">📊 Санал асуулга</h1>
+                    <p className="text-slate-500 text-sm mt-1">Оршин суугчдын санал асуулга үүсгэх, удирдах</p>
                 </div>
                 <button
                     onClick={() => setShowForm(!showForm)}
@@ -114,45 +114,45 @@ export default function Polls() {
 
             {/* Create Form */}
             {showForm && (
-                <div className="bg-linear-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/60 p-7 space-y-5 shadow-xl">
-                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                        <span className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-sm">✏️</span>
-                        Create New Poll
+                <div className="bg-white rounded-2xl border border-slate-200 p-7 space-y-5 shadow-sm">
+                    <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <span className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-sm">✏️</span>
+                        Шинэ санал асуулга
                     </h2>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1.5">Title *</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">Гарчиг *</label>
                         <input
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="e.g. Орцны хаалга сольих уу?"
-                            className="w-full px-4 py-3 bg-slate-900/80 border border-slate-600/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                            placeholder="Жнь: Орцны хаалга солих уу?"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1.5">Description</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">Тайлбар</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Optional description..."
+                            placeholder="Нэмэлт тайлбар..."
                             rows={2}
-                            className="w-full px-4 py-3 bg-slate-900/80 border border-slate-600/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all resize-none"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all resize-none"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-1.5">End Date (optional)</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-1.5">Дуусах огноо (заавал биш)</label>
                         <input
                             type="date"
                             value={endDate}
                             onChange={(e) => setEndDate(e.target.value)}
-                            className="px-4 py-3 bg-slate-900/80 border border-slate-600/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                            className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Options * (min 2)</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Сонголтууд * (хамгийн багадаа 2)</label>
                         <div className="space-y-2">
                             {options.map((opt, i) => (
                                 <div key={i} className="flex items-center gap-2">
@@ -162,8 +162,8 @@ export default function Polls() {
                                     <input
                                         value={opt}
                                         onChange={(e) => updateOption(i, e.target.value)}
-                                        placeholder={`Option ${i + 1}`}
-                                        className="flex-1 px-4 py-2.5 bg-slate-900/80 border border-slate-600/50 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                                        placeholder={`Сонголт ${i + 1}`}
+                                        className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
                                     />
                                     {options.length > 2 && (
                                         <button
@@ -178,28 +178,28 @@ export default function Polls() {
                         </div>
                         <button
                             onClick={addOption}
-                            className="mt-3 text-sm text-indigo-400 hover:text-indigo-300 transition-colors font-medium"
+                            className="mt-3 text-sm text-indigo-600 hover:text-indigo-700 transition-colors font-medium flex items-center gap-1"
                         >
-                            + Add option
+                            + Сонголт нэмэх
                         </button>
                     </div>
 
                     <button
                         onClick={handleCreate}
                         disabled={submitting}
-                        className="px-6 py-3 bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-green-500/20"
+                        className="px-6 py-3 bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:opacity-50 text-white rounded-xl font-semibold text-sm transition-all shadow-sm"
                     >
-                        {submitting ? 'Creating...' : '✓ Create Poll'}
+                        {submitting ? 'Үүсгэж байна...' : '✓ Санал асуулга үүсгэх'}
                     </button>
                 </div>
             )}
 
             {/* Polls List */}
             {polls.length === 0 ? (
-                <div className="text-center py-20 text-slate-400">
+                <div className="text-center py-20 text-slate-500 bg-white border border-slate-200 rounded-2xl">
                     <p className="text-6xl mb-4">📊</p>
-                    <p className="text-xl font-semibold text-white mb-1">No polls yet</p>
-                    <p className="text-sm">Create your first poll to start gathering votes</p>
+                    <p className="text-xl font-semibold text-slate-900 mb-1">Санал асуулга байхгүй байна</p>
+                    <p className="text-sm">Эхний санал асуулгаа үүсгээрэй.</p>
                 </div>
             ) : (
                 <div className="grid gap-6">
@@ -216,44 +216,44 @@ export default function Polls() {
                         return (
                             <div
                                 key={poll.id}
-                                className="bg-linear-to-br from-slate-800/90 to-slate-900 rounded-2xl border border-slate-700/40 overflow-hidden shadow-xl"
+                                className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm"
                             >
                                 {/* Poll Header */}
                                 <div className="p-6 pb-4">
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-2">
-                                                <h3 className="text-xl font-bold text-white">{poll.title}</h3>
+                                                <h3 className="text-xl font-bold text-slate-900">{poll.title}</h3>
                                                 <span
                                                     className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${poll.status === 'ACTIVE'
-                                                        ? 'bg-green-500/15 text-green-400 ring-1 ring-green-500/30'
-                                                        : 'bg-slate-600/30 text-slate-400 ring-1 ring-slate-500/30'
+                                                        ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200'
+                                                        : 'bg-slate-100 text-slate-500 ring-1 ring-slate-200'
                                                         }`}
                                                 >
-                                                    {poll.status === 'ACTIVE' ? '● Active' : '○ Closed'}
+                                                    {poll.status === 'ACTIVE' ? 'Идэвхтэй' : 'Хаагдсан'}
                                                 </span>
                                             </div>
                                             {poll.description && (
-                                                <p className="text-sm text-slate-400 leading-relaxed">{poll.description}</p>
+                                                <p className="text-sm text-slate-600 leading-relaxed">{poll.description}</p>
                                             )}
-                                            <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                                            <div className="flex items-center gap-4 mt-2 text-xs text-slate-500 font-medium">
                                                 <span className="flex items-center gap-1">
                                                     <span className="text-base">🗳️</span>
-                                                    <span className="font-semibold text-slate-300">{totalVotes}</span> votes
+                                                    <span className="font-bold text-slate-700">{totalVotes}</span> санал
                                                 </span>
                                                 {poll.endDate && (
-                                                    <span>Ends: {new Date(poll.endDate).toLocaleDateString()}</span>
+                                                    <span>Дуусах: {new Date(poll.endDate).toLocaleDateString()}</span>
                                                 )}
-                                                <span>Created: {new Date(poll.createdAt).toLocaleDateString()}</span>
+                                                <span>Үүсгэсэн: {new Date(poll.createdAt).toLocaleDateString()}</span>
                                             </div>
                                         </div>
 
                                         {poll.status === 'ACTIVE' && (
                                             <button
                                                 onClick={() => handleClose(poll.id)}
-                                                className="ml-4 px-4 py-2 text-sm bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-xl transition-all font-semibold ring-1 ring-red-500/20"
+                                                className="ml-4 px-4 py-2 text-sm bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition-all font-semibold border border-red-200 shadow-sm"
                                             >
-                                                Close Poll
+                                                Асуулга хаах
                                             </button>
                                         )}
                                     </div>
@@ -262,7 +262,7 @@ export default function Polls() {
                                 {/* Chart + Results */}
                                 <div className="px-6 pb-2">
                                     {totalVotes > 0 ? (
-                                        <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-700/30">
+                                        <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                                             <div className="h-[140px]">
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 40 }}>
@@ -270,22 +270,23 @@ export default function Polls() {
                                                         <YAxis
                                                             type="category"
                                                             dataKey="name"
-                                                            tick={{ fill: '#e2e8f0', fontSize: 13, fontWeight: 500 }}
+                                                            tick={{ fill: '#334155', fontSize: 13, fontWeight: 500 }}
                                                             width={130}
                                                             axisLine={false}
                                                             tickLine={false}
                                                         />
                                                         <Tooltip
                                                             contentStyle={{
-                                                                backgroundColor: '#1e293b',
-                                                                border: '1px solid #475569',
+                                                                backgroundColor: '#ffffff',
+                                                                border: '1px solid #e2e8f0',
                                                                 borderRadius: '12px',
-                                                                color: '#fff',
+                                                                color: '#0f172a',
                                                                 fontSize: '13px',
+                                                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                                                             }}
                                                             formatter={(value, _name, props) => [
-                                                                `${value} votes (${(props.payload as Record<string, number>).pct}%)`,
-                                                                'Votes',
+                                                                `${value} санал (${(props.payload as Record<string, number>).pct}%)`,
+                                                                'Санал',
                                                             ]}
                                                         />
                                                         <Bar dataKey="votes" radius={[0, 8, 8, 0]} barSize={22}>
@@ -298,8 +299,8 @@ export default function Polls() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="text-center py-8 text-slate-500 text-sm bg-slate-900/30 rounded-xl border border-dashed border-slate-700/40">
-                                            🗳️ No votes yet — waiting for residents
+                                        <div className="text-center py-8 text-slate-500 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                                            🗳️ Одоогоор санал өгсөн хүн алга байна.
                                         </div>
                                     )}
                                 </div>
@@ -313,17 +314,17 @@ export default function Polls() {
                                         const voters = opt.votes?.map((v) => v.user?.name).filter(Boolean) || [];
 
                                         return (
-                                            <div key={opt.id} className="bg-slate-900/40 rounded-xl px-4 py-3 border border-slate-700/20">
+                                            <div key={opt.id} className="bg-slate-50 rounded-xl px-4 py-3 border border-slate-200">
                                                 <div className="flex items-center gap-3">
                                                     <div
-                                                        className="w-3.5 h-3.5 rounded-full shrink-0 ring-2 ring-offset-1 ring-offset-slate-900"
+                                                        className="w-3.5 h-3.5 rounded-full shrink-0 ring-2 ring-offset-1 ring-offset-white"
                                                         style={{ backgroundColor: color }}
                                                     />
-                                                    <span className="text-sm text-slate-200 flex-1 font-medium">{opt.text}</span>
-                                                    <span className="text-sm font-bold text-white tabular-nums">
+                                                    <span className="text-sm text-slate-700 flex-1 font-semibold">{opt.text}</span>
+                                                    <span className="text-sm font-bold text-slate-900 tabular-nums">
                                                         {opt._count.votes}
                                                     </span>
-                                                    <span className="text-xs text-slate-400 w-12 text-right">
+                                                    <span className="text-xs text-slate-500 w-12 text-right">
                                                         ({pct}%)
                                                     </span>
                                                 </div>
@@ -356,27 +357,27 @@ export default function Polls() {
                                     <div className="px-6 pb-5">
                                         <button
                                             onClick={() => setExpandedPoll(isExpanded ? null : poll.id)}
-                                            className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors font-medium"
+                                            className="text-xs text-indigo-600 hover:text-indigo-800 transition-colors font-semibold"
                                         >
-                                            {isExpanded ? '▲ Hide details' : `▼ Show all ${totalVotes} voter details`}
+                                            {isExpanded ? '▲ Дэлгэрэнгүй хаах' : `▼ Бүх ${totalVotes} санал өгөгчийг харах`}
                                         </button>
 
                                         {isExpanded && (
-                                            <div className="mt-3 bg-slate-900/60 rounded-xl p-4 border border-slate-700/30">
-                                                <table className="w-full text-sm">
+                                            <div className="mt-3 bg-white rounded-xl p-4 border border-slate-200 shadow-sm">
+                                                <table className="w-full text-sm text-left">
                                                     <thead>
-                                                        <tr className="text-xs text-slate-400 uppercase tracking-wider">
-                                                            <th className="text-left py-2 px-2">Voter</th>
-                                                            <th className="text-left py-2 px-2">Choice</th>
+                                                        <tr className="text-xs text-slate-500 uppercase tracking-wider font-semibold">
+                                                            <th className="py-2 px-2">Оршин суугч</th>
+                                                            <th className="py-2 px-2">Сонголт</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="divide-y divide-slate-700/30">
+                                                    <tbody className="divide-y divide-slate-100">
                                                         {poll.options.flatMap((opt, optIdx) =>
                                                             (opt.votes || []).map((v, vi) => (
-                                                                <tr key={`${opt.id}-${vi}`} className="hover:bg-slate-800/50">
-                                                                    <td className="py-2 px-2 text-slate-300 font-medium">
+                                                                <tr key={`${opt.id}-${vi}`} className="hover:bg-slate-50">
+                                                                    <td className="py-2 px-2 text-slate-800 font-medium">
                                                                         <span className="flex items-center gap-2">
-                                                                            <span className="w-6 h-6 rounded-full bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] text-white font-bold">
+                                                                            <span className="w-6 h-6 rounded-full bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] text-white font-bold shadow-sm">
                                                                                 {(v.user?.name || '?')[0]}
                                                                             </span>
                                                                             {v.user?.name || 'Unknown'}

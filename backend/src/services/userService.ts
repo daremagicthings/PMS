@@ -20,6 +20,8 @@ export interface SafeUser {
     email: string | null;
     role: Role;
     apartmentId: string | null;
+    ebarimtType: string;
+    ebarimtRegNo: string | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -74,6 +76,8 @@ const toSafeUser = (user: User): SafeUser => {
         email: user.email,
         role: user.role,
         apartmentId: user.apartmentId,
+        ebarimtType: user.ebarimtType,
+        ebarimtRegNo: user.ebarimtRegNo,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
     };
@@ -90,5 +94,29 @@ export const updatePushToken = async (userId: string, token: string): Promise<vo
         where: { id: userId },
         data: { expoPushToken: token },
     });
+};
+
+/**
+ * Updates the E-Barimt settings (Type and Registry Number) for a user.
+ *
+ * @param userId - UUID of the user
+ * @param ebarimtType - "CITIZEN" or "ENTITY"
+ * @param ebarimtRegNo - Company TTDD or Citizen ID
+ * @returns The updated safe user object
+ */
+export const updateEbarimtSettings = async (
+    userId: string,
+    ebarimtType: string,
+    ebarimtRegNo: string | null
+): Promise<SafeUser> => {
+    const user = await prisma.user.update({
+        where: { id: userId },
+        data: {
+            ebarimtType,
+            ebarimtRegNo,
+        },
+    });
+
+    return toSafeUser(user);
 };
 

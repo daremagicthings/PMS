@@ -92,11 +92,11 @@ This file tracks the step-by-step development tasks. The AI Agent must pick task
 - [ ] **Task 13.1:** Integrate Gemini API for smart resident assistance.
 
 ## Phase 14: Mobile App UX/UI & Resident Features
-- [ ] **Task 14.1:** Multi-Property Management: Backend `GET /api/apartments/my-apartments` to fetch all properties linked to the user. Mobile App `HomeScreen` carousel to switch between properties and filter invoices/tickets.
-- [ ] **Task 14.2:** Bulk Invoice Payment & Breakdown: Mobile checkboxes for unpaid invoices, floating "Pay Total" button. Expandable invoice breakdown UI. Backend `POST /api/invoices/qpay-bulk` to handle multiple invoices.
-- [ ] **Task 14.3:** Corporate vs Citizen E-Barimt: Add `ebarimtType` and `ebarimtRegNo` to `User` model. Create API to update. Add settings UI in Mobile `AccountScreen`.
-- [ ] **Task 14.4:** Tickets UI Polish: Top tabs (New, Resolved, Cancelled) and a Floating Action Button (FAB) for new tickets in Mobile App.
-- [ ] **Task 14.5:** Contacts Directory: `ContactDirectory` model + CRUD. Web Admin page to manage. Mobile App screen to view and call numbers.
+- [x] **Task 14.1:** Multi-Property Management: Backend `GET /api/apartments/my-apartments` to fetch all properties linked to the user. Mobile App `HomeScreen` carousel to switch between properties and filter invoices/tickets.
+- [x] **Task 14.2:** Bulk Invoice Payment & Breakdown: Mobile checkboxes for unpaid invoices, floating "Pay Total" button. Expandable invoice breakdown UI. Backend `POST /api/invoices/qpay-bulk` to handle multiple invoices.
+- [x] **Task 14.3:** Corporate vs Citizen E-Barimt: Add `ebarimtType` and `ebarimtRegNo` to `User` model. Create API to update. Add settings UI in Mobile `AccountScreen`.
+- [x] **Task 14.4:** Tickets UI Polish: Top tabs (New, Resolved, Cancelled) and a Floating Action Button (FAB) for new tickets in Mobile App.
+- [x] **Task 14.5:** Contacts Directory: `ContactDirectory` model + CRUD. Web Admin page to manage. Mobile App screen to view and call numbers.
 
 ## Phase 15: Advanced Admin Operations & Accounting
 - [ ] **Task 15.1:** Expanded Unit Types: Add PARKING, STORAGE to `unitType`. Add `parentApartmentId`. Web admin UI updates.

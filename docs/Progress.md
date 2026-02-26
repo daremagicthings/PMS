@@ -333,5 +333,25 @@
 
 ---
 
-## Next: Phase 13+ (Roadmap)
+## Phase 14: Mobile App UX/UI & Resident Features (Part 1) — ✅ COMPLETED
+**Date:** 2026-02-26
+
+### Task 14.1 — Multi-Property Management
+- **Backend:** Created `apartmentService.getMyApartments(userId)` to fetch properties where user is an owner, tenant, or general resident. Added `GET /api/apartments/my-apartments` endpoint protected by auth.
+- **Mobile App:** Updated `HomeScreen` to fetch full invoice lists and apartment list concurrently. Built a horizontal property selector. Invoices and totals now update dynamically based on the selected property.
+
+### Task 14.2 — Bulk Invoice Payment (QPay)
+- **Backend:** Added `qpayService.generateBulkQpayInvoice(invoiceIds)` to generate a single QPay QR mapping to multiple invoices. Added `POST /api/invoices/qpay-bulk`. 
+- **Backend Webhook:** Modified `processQpayWebhook` to handle multiple invoices simultaneously and update status/barimt in parallel.
+- **Mobile App:** Added checkbox UI to `HomeScreen` invoice rows. "Pay Now" button scales to "Pay Selected (₮X)" dynamically. Handled fallbacks for single-vs-bulk payment flows.
+
+### Task 14.3 — Corporate vs Citizen E-Barimt (Settings)
+- **Database:** Added `ebarimtType` (String, default "CITIZEN") and `ebarimtRegNo` (String?) to `User` model.
+- **Backend:** Added `PUT /api/users/ebarimt-settings` endpoint to update the user's registry preferences.
+- **Mobile App:** Added `E-Barimt Settings` toggle box to `AccountScreen`. Users can select between Citizen and Entity and provide their TTDD. Integrated with API successfully.
+
+---
+
+## Next: Phase 14 (Part 2) & Phase 13+ (Roadmap)
+- **Phase 14:** Tickets UI Polish, Contacts Directory.
 - **Phase 13:** AI Chatbot.

@@ -139,41 +139,41 @@ export default function Residents() {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                    <Building2 className="text-blue-400" size={28} />
-                    <h1 className="text-2xl font-bold text-white">Оршин суугчид</h1>
+                    <Building2 className="text-blue-600" size={28} />
+                    <h1 className="text-2xl font-bold text-slate-900">Оршин суугчид</h1>
                 </div>
                 <button
                     onClick={openCreateModal}
                     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors cursor-pointer"
                 >
                     <Plus size={18} />
-                    {isLeaseTab ? 'Түрээсийн талбай нэмэх' : 'Орон сууц нэмэх'}
+                    {isLeaseTab ? 'Түрээс нэмэх' : 'Орон сууц нэмэх'}
                 </button>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1 mb-6 bg-slate-800/60 rounded-xl p-1 w-fit">
+            <div className="flex gap-1 mb-6 bg-slate-100 rounded-xl p-1 w-fit border border-slate-200">
                 <button
                     onClick={() => setActiveTab('apartments')}
                     className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer ${activeTab === 'apartments'
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
-                            : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
+                        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
                         }`}
                 >
                     <Home size={16} /> 🏠 Орон сууц
-                    <span className="ml-1 bg-slate-700/80 text-xs px-2 py-0.5 rounded-full">
+                    <span className={`ml-1 text-xs px-2 py-0.5 rounded-full ${activeTab === 'apartments' ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-600'}`}>
                         {apartmentUnits.length}
                     </span>
                 </button>
                 <button
                     onClick={() => setActiveTab('leased')}
                     className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer ${activeTab === 'leased'
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
-                            : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
+                        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/50'
                         }`}
                 >
-                    <Key size={16} /> 📋 Түрээсийн талбай
-                    <span className="ml-1 bg-slate-700/80 text-xs px-2 py-0.5 rounded-full">
+                    <Key size={16} /> 📋 Түрээс
+                    <span className={`ml-1 text-xs px-2 py-0.5 rounded-full ${activeTab === 'leased' ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-600'}`}>
                         {leasedUnits.length}
                     </span>
                 </button>
@@ -181,20 +181,20 @@ export default function Residents() {
 
             {/* Table */}
             {loading ? (
-                <p className="text-slate-400">Уншиж байна...</p>
+                <p className="text-slate-500">Уншиж байна...</p>
             ) : displayData.length === 0 ? (
-                <div className="text-center py-16 text-slate-500">
+                <div className="text-center py-16 text-slate-500 bg-white rounded-xl border border-slate-200 shadow-sm">
                     <Building2 size={48} className="mx-auto mb-3 opacity-40" />
-                    <p className="text-lg font-medium">
-                        {isLeaseTab ? 'Түрээсийн талбай олдсонгүй' : 'Орон сууц олдсонгүй'}
+                    <p className="text-lg font-medium text-slate-700">
+                        {isLeaseTab ? 'Түрээс олдсонгүй' : 'Орон сууц олдсонгүй'}
                     </p>
                     <p className="text-sm mt-1">Дээрх товч дээр дарж шинэ бүртгэл нэмнэ үү</p>
                 </div>
             ) : (
-                <div className="overflow-x-auto rounded-xl border border-slate-700/50 bg-slate-800/40">
+                <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="border-b border-slate-700/50 text-slate-400 text-xs uppercase tracking-wider">
+                            <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-semibold">
                                 <th className="px-5 py-3.5">Барилга</th>
                                 <th className="px-5 py-3.5">Орц</th>
                                 <th className="px-5 py-3.5">Давхар</th>
@@ -216,23 +216,23 @@ export default function Residents() {
                             {displayData.map((apt) => (
                                 <tr
                                     key={apt.id}
-                                    className="border-b border-slate-700/30 hover:bg-slate-700/20 transition-colors"
+                                    className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
                                 >
-                                    <td className="px-5 py-3.5 text-white font-medium">{apt.buildingName}</td>
-                                    <td className="px-5 py-3.5 text-slate-300">{apt.entrance}</td>
-                                    <td className="px-5 py-3.5 text-slate-300">{apt.floor}</td>
-                                    <td className="px-5 py-3.5 text-slate-300">{apt.unitNumber}</td>
+                                    <td className="px-5 py-3.5 text-slate-900 font-bold">{apt.buildingName}</td>
+                                    <td className="px-5 py-3.5 text-slate-600 font-medium">{apt.entrance}</td>
+                                    <td className="px-5 py-3.5 text-slate-600 font-medium">{apt.floor}</td>
+                                    <td className="px-5 py-3.5 text-slate-600 font-medium">{apt.unitNumber}</td>
                                     {isLeaseTab && (
                                         <td className="px-5 py-3.5">
-                                            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${apt.unitType === 'MUSAR'
-                                                    ? 'bg-amber-500/15 text-amber-400'
-                                                    : 'bg-purple-500/15 text-purple-400'
+                                            <span className={`text-xs font-bold px-3 py-1.5 rounded-lg ${apt.unitType === 'MUSAR'
+                                                ? 'bg-amber-100 text-amber-700'
+                                                : 'bg-purple-100 text-purple-700'
                                                 }`}>
                                                 {UNIT_TYPES.find(t => t.value === apt.unitType)?.label ?? apt.unitType}
                                             </span>
                                         </td>
                                     )}
-                                    <td className="px-5 py-3.5 text-slate-300">
+                                    <td className="px-5 py-3.5 text-slate-700 font-medium">
                                         {isLeaseTab
                                             ? getUserName(apt.ownerId)
                                             : (apt.residents?.map(r => r.name).join(', ') || '—')
@@ -240,10 +240,10 @@ export default function Residents() {
                                     </td>
                                     {isLeaseTab && (
                                         <>
-                                            <td className="px-5 py-3.5 text-slate-300">
+                                            <td className="px-5 py-3.5 text-slate-700 font-medium">
                                                 {getUserName(apt.tenantId)}
                                             </td>
-                                            <td className="px-5 py-3.5 text-slate-400 text-sm">
+                                            <td className="px-5 py-3.5 text-slate-500 text-sm font-medium">
                                                 {apt.leaseStartDate && apt.leaseEndDate
                                                     ? `${new Date(apt.leaseStartDate).toLocaleDateString('mn-MN')} — ${new Date(apt.leaseEndDate).toLocaleDateString('mn-MN')}`
                                                     : '—'
@@ -254,7 +254,7 @@ export default function Residents() {
                                     <td className="px-5 py-3.5 text-right">
                                         <button
                                             onClick={() => openEditModal(apt)}
-                                            className="text-slate-400 hover:text-blue-400 transition-colors p-1.5 rounded-lg hover:bg-slate-700/50 cursor-pointer"
+                                            className="text-slate-400 hover:text-blue-600 transition-colors p-1.5 rounded-lg hover:bg-slate-100 cursor-pointer"
                                             title="Засах"
                                         >
                                             <Pencil size={16} />
@@ -269,11 +269,11 @@ export default function Residents() {
 
             {/* ─── Modal ────────────────────────────────────── */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                    <div className="bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-slate-700/50 max-h-[90vh] overflow-y-auto">
-                        <h2 className="text-xl font-bold text-white mb-5 flex items-center gap-2">
-                            <Building2 size={22} className="text-blue-400" />
-                            {editId ? 'Мэдээлэл засах' : (isLeaseTab ? 'Түрээсийн талбай нэмэх' : 'Орон сууц нэмэх')}
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-slate-200 max-h-[90vh] overflow-y-auto">
+                        <h2 className="text-xl font-bold text-slate-900 mb-5 flex items-center gap-2">
+                            <Building2 size={22} className="text-blue-600" />
+                            {editId ? 'Мэдээлэл засах' : (isLeaseTab ? 'Түрээс нэмэх' : 'Орон сууц нэмэх')}
                         </h2>
 
                         {error && (
@@ -285,36 +285,37 @@ export default function Residents() {
                         {/* Basic info */}
                         <div className="grid grid-cols-2 gap-3 mb-4">
                             <div>
-                                <label className="text-xs text-slate-400 mb-1 block">Барилга *</label>
+                                <label className="text-xs font-semibold text-slate-600 mb-1 block">Барилга *</label>
                                 <input
-                                    className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                    className="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                                     value={form.buildingName}
                                     onChange={e => setForm({ ...form, buildingName: e.target.value })}
                                     placeholder="Барилга А"
                                 />
                             </div>
                             <div>
-                                <label className="text-xs text-slate-400 mb-1 block">Орц *</label>
+                                <label className="text-xs font-semibold text-slate-600 mb-1 block">Орц *</label>
                                 <input
-                                    className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                    className="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                                     value={form.entrance}
                                     onChange={e => setForm({ ...form, entrance: e.target.value })}
                                     placeholder="1"
                                 />
                             </div>
                             <div>
-                                <label className="text-xs text-slate-400 mb-1 block">Давхар</label>
+                                <label className="text-xs font-semibold text-slate-600 mb-1 block">Давхар</label>
                                 <input
-                                    type="number"
-                                    className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
-                                    value={form.floor}
-                                    onChange={e => setForm({ ...form, floor: Number(e.target.value) })}
+                                    type="text"
+                                    className="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
+                                    value={form.floor || ''}
+                                    onChange={e => setForm({ ...form, floor: parseInt(e.target.value) || 0 })}
+                                    placeholder="2"
                                 />
                             </div>
                             <div>
-                                <label className="text-xs text-slate-400 mb-1 block">Тасалгаа *</label>
+                                <label className="text-xs font-semibold text-slate-600 mb-1 block">Тасалгаа *</label>
                                 <input
-                                    className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                    className="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                                     value={form.unitNumber}
                                     onChange={e => setForm({ ...form, unitNumber: e.target.value })}
                                     placeholder="101"
@@ -324,11 +325,11 @@ export default function Residents() {
 
                         {/* Unit Type */}
                         <div className="mb-4">
-                            <label className="text-xs text-slate-400 mb-1 flex items-center gap-1">
+                            <label className="text-xs font-semibold text-slate-600 mb-1 flex items-center gap-1">
                                 <Home size={12} /> Төрөл
                             </label>
                             <select
-                                className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                className="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                                 value={form.unitType}
                                 onChange={e => setForm({ ...form, unitType: e.target.value })}
                             >
@@ -339,16 +340,16 @@ export default function Residents() {
                         </div>
 
                         {/* Divider — Lease section */}
-                        <div className="border-t border-slate-700/50 pt-4 mt-2 mb-4">
-                            <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
-                                <UserIcon size={14} className="text-blue-400" />
+                        <div className="border-t border-slate-200 pt-4 mt-2 mb-4">
+                            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <UserIcon size={16} className="text-blue-600" />
                                 Эзэмшигч & Түрээслэгч
                             </h3>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="text-xs text-slate-400 mb-1 block">Эзэмшигч</label>
+                                    <label className="text-xs font-semibold text-slate-600 mb-1 block">Эзэмшигч</label>
                                     <select
-                                        className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                        className="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                                         value={form.ownerId}
                                         onChange={e => setForm({ ...form, ownerId: e.target.value })}
                                     >
@@ -359,9 +360,9 @@ export default function Residents() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="text-xs text-slate-400 mb-1 block">Түрээслэгч</label>
+                                    <label className="text-xs font-semibold text-slate-600 mb-1 block">Түрээслэгч</label>
                                     <select
-                                        className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                        className="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                                         value={form.tenantId}
                                         onChange={e => setForm({ ...form, tenantId: e.target.value })}
                                     >
@@ -376,25 +377,25 @@ export default function Residents() {
 
                         {/* Lease dates */}
                         <div className="mb-4">
-                            <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
-                                <Calendar size={14} className="text-green-400" />
+                            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <Calendar size={16} className="text-emerald-500" />
                                 Түрээсийн хугацаа
                             </h3>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="text-xs text-slate-400 mb-1 block">Эхлэх огноо</label>
+                                    <label className="text-xs font-semibold text-slate-600 mb-1 block">Эхлэх огноо</label>
                                     <input
                                         type="date"
-                                        className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                        className="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                                         value={form.leaseStartDate}
                                         onChange={e => setForm({ ...form, leaseStartDate: e.target.value })}
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-slate-400 mb-1 block">Дуусах огноо</label>
+                                    <label className="text-xs font-semibold text-slate-600 mb-1 block">Дуусах огноо</label>
                                     <input
                                         type="date"
-                                        className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                        className="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                                         value={form.leaseEndDate}
                                         onChange={e => setForm({ ...form, leaseEndDate: e.target.value })}
                                     />
@@ -404,11 +405,11 @@ export default function Residents() {
 
                         {/* Contract ID */}
                         <div className="mb-6">
-                            <label className="text-xs text-slate-400 mb-1 flex items-center gap-1">
-                                <FileText size={12} /> Гэрээний дугаар
+                            <label className="text-xs font-semibold text-slate-600 mb-1 flex items-center gap-1">
+                                <FileText size={14} /> Гэрээний дугаар
                             </label>
                             <input
-                                className="w-full bg-slate-700/60 text-white px-3 py-2 rounded-lg border border-slate-600/50 focus:border-blue-500 focus:outline-none text-sm"
+                                className="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
                                 value={form.contractId}
                                 onChange={e => setForm({ ...form, contractId: e.target.value })}
                                 placeholder="GER-2025-001"
@@ -419,7 +420,7 @@ export default function Residents() {
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="px-4 py-2 text-slate-400 hover:text-white transition-colors text-sm font-medium cursor-pointer"
+                                className="px-4 py-2 text-slate-600 hover:text-slate-900 transition-colors text-sm font-semibold cursor-pointer"
                             >
                                 Цуцлах
                             </button>

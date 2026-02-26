@@ -90,3 +90,32 @@ export const getAllApartmentsController = async (
         next(error instanceof Error ? error : new Error('Unknown error'));
     }
 };
+
+/**
+ * Controller for GET /api/apartments/my-apartments
+ * Lists all apartments linked to the authenticated user.
+ */
+export const getMyApartmentsController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const userId = req.user?.userId;
+        if (!userId) {
+            res.status(401).json({ success: false, message: 'Unauthorized' });
+            return;
+        }
+
+        const { getMyApartments } = await import('../services/apartmentService');
+        const apartments = await getMyApartments(userId);
+
+        res.status(200).json({
+            success: true,
+            message: 'My apartments retrieved successfully',
+            data: apartments,
+        });
+    } catch (error) {
+        next(error instanceof Error ? error : new Error('Unknown error'));
+    }
+};

@@ -13,5 +13,11 @@ router.get('/', getAllUsersController);
 /** PUT /api/users/push-token — Register Expo push token for the logged-in user */
 router.put('/push-token', authMiddleware, updatePushTokenController);
 
+/** PUT /api/users/ebarimt-settings — Update user's E-Barimt preferences */
+router.put('/ebarimt-settings', authMiddleware, async (req, res, next) => {
+    const { updateEbarimtSettingsController } = await import('../controllers/userController');
+    updateEbarimtSettingsController(req, res, next);
+});
+
 export default router;
 
