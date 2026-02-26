@@ -350,8 +350,13 @@
 - **Backend:** Added `PUT /api/users/ebarimt-settings` endpoint to update the user's registry preferences.
 - **Mobile App:** Added `E-Barimt Settings` toggle box to `AccountScreen`. Users can select between Citizen and Entity and provide their TTDD. Integrated with API successfully.
 
+### Task 14.6 — Content UI & Navigation Refactoring (Polish)
+- **Web Admin:** Verified `upsertStaticContent` connects to the proper payload for saving "СӨХ-ийн дүрэм журам" and "Лавлагаа".
+- **Mobile App:** Removed "Харилцах" (Contacts) from the primary bottom tabs to clear up navigation. Moved the Contacts button into the `AccountScreen` menu list.
+- **Mobile App:** Transformed static content `Alert` dialogs into a dedicated full-screen `StaticContentScreen` for better readability of large texts like Rules and FAQs.
+
 ---
 
-## Next: Phase 14 (Part 2) & Phase 13+ (Roadmap)
-- **Phase 14:** Tickets UI Polish, Contacts Directory.
-- **Phase 13:** AI Chatbot.
+## Next: Phase 15 (Admin Ops & Accounting) & Phase 13 (AI Chatbot)
+- **Phase 15:** Advanced Admin Operations & Accounting.
+- **Phase 13:** AI Chatbot Setup.
