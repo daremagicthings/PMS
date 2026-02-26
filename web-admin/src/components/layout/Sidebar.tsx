@@ -5,7 +5,6 @@ import {
     Receipt,
     Ticket,
     Megaphone,
-    Building2,
     ClipboardList,
     BarChart3,
     Vote,
@@ -39,9 +38,7 @@ export default function Sidebar() {
         <aside className="fixed left-0 top-0 h-screen w-64 bg-slate-900 text-white flex flex-col z-50">
             {/* Logo */}
             <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-700/50">
-                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                    <Building2 size={20} className="text-white" />
-                </div>
+                <img src="/icon.png" alt="SOH Logo" className="w-10 h-10 rounded-xl object-cover shadow-md" />
                 <div>
                     <h1 className="text-lg font-bold tracking-tight">СӨХ System</h1>
                     <p className="text-[11px] text-slate-400 -mt-0.5">Property Management</p>
