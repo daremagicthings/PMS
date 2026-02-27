@@ -835,3 +835,19 @@
 
 ### Task 17.4 — CI/CD Pipeline Setup
 - **GitHub Actions:** Created .github/workflows/main.yml to automatically checkout the code, install dependencies, type-check the backend (	sc --noEmit), and type-check the web-admin. Runs on push and pull_request to the main branch.
+
+
+## Phase 18: Deployment & DevOps — ✅ COMPLETED
+**Date:** 2026-02-27
+
+### Task 18.1 — Backend Dockerfile
+- **Backend:** Created `Dockerfile.prod` leveraging multi-stage/layer execution. Uses `node:20-alpine`, installs dependencies via `npm ci`, generates Prisma client, runs TS compiler, and runs migrations (`npx prisma migrate deploy`) prior to starting `node dist/server.js`.
+
+### Task 18.2 — Web Admin Dockerfile
+- **Web Admin:** Created `Dockerfile.prod` containing a two-stage build. First stage builds the React Vite app. Second stage uses `nginx:alpine` and copies over `dist` contents, loading a custom `nginx.conf` for React Router fallback support.
+
+### Task 18.3 — Production Docker Compose
+- **Infrastructure:** Created `docker-compose.prod.yml` at project root wrapping three services: `db` (Postgres 15), `backend`, and `web-admin`. Configured container networking, volumes for DB persistence, `.env` file passing, and restart policies.
+
+### Task 18.4 — Mobile App EAS
+- **Mobile App:** Created `eas.json` configuring standard Expo Application Services (EAS) build profiles for `development`, `preview`, and `production`. `production` is set to generate an `.aab` file for Android and an App Store compatible build for iOS.

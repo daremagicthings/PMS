@@ -114,3 +114,9 @@ This file tracks the step-by-step development tasks. The AI Agent must pick task
 - [x] **Task 17.2:** Error Tracking (Sentry): Install and configure Sentry on both the Backend and Mobile App to track real-time crashes and unhandled exceptions using environment variables for DSNs.
 - [x] **Task 17.3:** Database Indexing & Performance: Add `@index` to heavily queried Prisma fields (e.g., unitNumber, status) to optimize database read performance.
 - [x] **Task 17.4:** CI/CD Pipeline Setup: Create a GitHub Actions workflow `.github/workflows/main.yml` to automatically lint, build, and test the backend and web-admin on every push.
+
+## Phase 18: Deployment & DevOps (Серверт байршуулах)
+- [ ] **Task 18.1:** Dockerize Backend: Create a production `Dockerfile` for the Node.js backend ensuring Prisma generates the client correctly.
+- [ ] **Task 18.2:** Dockerize Web Admin: Create a multi-stage `Dockerfile` (build with Node, serve with Nginx) for the Vite React app.
+- [ ] **Task 18.3:** Production Compose: Create a `docker-compose.prod.yml` at the project root to orchestrate PostgreSQL, Backend, and Web Admin together.
+- [ ] **Task 18.4:** Mobile App EAS Setup: Create `eas.json` in `/mobile-app` to configure Android (AAB) and iOS (IPA) production builds.
