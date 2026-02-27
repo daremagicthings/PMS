@@ -139,6 +139,7 @@ model Apartment {
   updatedAt DateTime @updatedAt
 
   @@unique([buildingName, entrance, unitNumber])
+  @@index([unitType])
   @@map("apartments")
 }
 
@@ -165,6 +166,9 @@ model Invoice {
 
   bankStatements BankStatement[]
 
+  @@index([status])
+  @@index([dueDate])
+  @@index([apartmentId])
   @@map("invoices")
 }
 
@@ -182,6 +186,7 @@ model BankStatement {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([status])
   @@map("bank_statements")
 }
 
@@ -203,6 +208,8 @@ model Ticket {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([status])
+  @@index([createdAt])
   @@map("tickets")
 }
 
@@ -255,6 +262,7 @@ model Notification {
 
   createdAt DateTime @default(now())
 
+  @@index([userId, isRead])
   @@map("notifications")
 }
 
@@ -339,6 +347,7 @@ model FinancialTransaction {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  @@index([date])
   @@map("financial_transactions")
 }
 
@@ -428,6 +437,7 @@ model Contact {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([organizationId])
   @@map("contacts")
 }
 
@@ -444,5 +454,6 @@ model Faq {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([organizationId])
   @@map("faqs")
 }

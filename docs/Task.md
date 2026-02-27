@@ -112,5 +112,5 @@ This file tracks the step-by-step development tasks. The AI Agent must pick task
 ## Phase 17: Production Readiness & CI/CD
 - [x] **Task 17.1:** Security Hardening: Install `helmet` and `express-rate-limit` on the backend. Secure HTTP headers and apply rate limiting to prevent brute-force and DDoS attacks.
 - [x] **Task 17.2:** Error Tracking (Sentry): Install and configure Sentry on both the Backend and Mobile App to track real-time crashes and unhandled exceptions using environment variables for DSNs.
-- [ ] **Task 17.3:** Database Indexing & Performance: Add `@index` to heavily queried Prisma fields (e.g., unitNumber, status) to optimize database read performance.
-- [ ] **Task 17.4:** CI/CD Pipeline Setup: Create a GitHub Actions workflow `.github/workflows/main.yml` to automatically lint, build, and test the backend and web-admin on every push.
+- [x] **Task 17.3:** Database Indexing & Performance: Add `@index` to heavily queried Prisma fields (e.g., unitNumber, status) to optimize database read performance.
+- [x] **Task 17.4:** CI/CD Pipeline Setup: Create a GitHub Actions workflow `.github/workflows/main.yml` to automatically lint, build, and test the backend and web-admin on every push.
