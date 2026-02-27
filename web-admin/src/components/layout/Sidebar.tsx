@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard,
     Users,
@@ -11,6 +11,7 @@ import {
     Car,
     FileText,
     BookUser,
+    LogOut,
 } from 'lucide-react';
 
 /**
@@ -20,6 +21,7 @@ const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/residents', label: 'Residents', icon: Users },
     { to: '/invoices', label: 'Invoices', icon: Receipt },
+    { to: '/reconciliation', label: 'Тулгалт', icon: FileText },
     { to: '/tickets', label: 'Tickets', icon: Ticket },
     { to: '/announcements', label: 'Announcements', icon: Megaphone },
     { to: '/work-plans', label: 'Work Plans', icon: ClipboardList },
@@ -34,6 +36,13 @@ const navItems = [
  * Sidebar navigation component with dark theme.
  */
 export default function Sidebar() {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('soh_auth');
+        window.location.href = '/'; // Force a full reload to clear state and potentially trigger auth wrapper if one exists, or just clear data
+    };
+
     return (
         <aside className="fixed left-0 top-0 h-screen w-64 bg-slate-900 text-white flex flex-col z-50">
             {/* Logo */}
@@ -46,7 +55,7 @@ export default function Sidebar() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-3 py-4 space-y-1">
+            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
                 {navItems.map((item) => (
                     <NavLink
                         key={item.to}
@@ -65,8 +74,14 @@ export default function Sidebar() {
             </nav>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t border-slate-700/50">
-                <p className="text-xs text-slate-500">v1.0.0 MVP</p>
+            <div className="px-3 py-4 border-t border-slate-700/50">
+                <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+                >
+                    <LogOut size={18} />
+                    <span>Гарах (Logout)</span>
+                </button>
             </div>
         </aside>
     );

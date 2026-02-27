@@ -58,9 +58,10 @@ export const login = async (input: LoginInput): Promise<LoginResult> => {
         throw new Error('Invalid phone number or password');
     }
 
-    const payload: JwtPayload = {
+    const payload: JwtPayload & { organizationId: string | null } = {
         userId: user.id,
         role: user.role,
+        organizationId: user.organizationId,
     };
 
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });

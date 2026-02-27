@@ -4,10 +4,14 @@ import {
     getAllFinancialReportsController,
     updateFinancialReportController,
     deleteFinancialReportController,
+    downloadPdfController,
 } from '../controllers/financialReportController';
 import { uploadSingle } from '../middlewares/uploadMiddleware';
 
 const router = Router();
+
+/** GET /api/financial-reports/:id/pdf — Download PDF report */
+router.get('/:id/pdf', downloadPdfController);
 
 /** POST /api/financial-reports — Admin creates a financial report (with optional image) */
 router.post('/', uploadSingle, createFinancialReportController);

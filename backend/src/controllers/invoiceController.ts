@@ -6,8 +6,10 @@ import {
     markInvoiceAsPaid,
     calculatePenalties,
     CreateInvoiceInput,
+    bulkImportInvoices,
 } from '../services/invoiceService';
 import { generateEbarimt } from '../services/ebarimtService';
+import fs from 'fs';
 
 /**
  * Controller for POST /api/invoices
@@ -57,12 +59,18 @@ export const getAllInvoicesController = async (
 ): Promise<void> => {
     try {
         const user = req.user;
+        const filters = {
+            status: req.query.status as string,
+            startDate: req.query.startDate as string,
+            endDate: req.query.endDate as string,
+            apartmentId: req.query.apartmentId as string,
+        };
         let invoices;
 
         if (user && user.role === 'RESIDENT') {
-            invoices = await getInvoicesForResident(user.userId);
+            invoices = await getInvoicesForResident(user.userId, filters);
         } else {
-            invoices = await getAllInvoices();
+            invoices = await getAllInvoices(filters);
         }
 
         res.status(200).json({
@@ -169,5 +177,41 @@ export const getEbarimtController = async (
             return;
         }
         next(err);
+    }
+};
+
+/**
+ * Controller for POST /api/invoices/bulk-import
+ * Admin bulk imports invoices from an uploaded Excel file.
+ */
+export const bulkImportInvoicesController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        if (!req.user || req.user.role !== 'ADMIN') {
+            res.status(403).json({ success: false, message: 'Admin access required' });
+            return;
+        }
+
+        if (!req.file) {
+            res.status(400).json({ success: false, message: 'Excel file is required' });
+            return;
+        }
+
+        const result = await bulkImportInvoices(req.file.path);
+
+        // Clean up uploaded file
+        fs.unlinkSync(req.file.path);
+
+        res.status(200).json({
+            success: true,
+            message: 'Bulk import completed',
+            data: result,
+        });
+    } catch (error) {
+        if (req.file) fs.unlinkSync(req.file.path);
+        next(error instanceof Error ? error : new Error('Unknown error'));
     }
 };

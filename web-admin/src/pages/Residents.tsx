@@ -10,8 +10,11 @@ type TabKey = 'apartments' | 'leased';
 /** Unit type options */
 const UNIT_TYPES = [
     { value: 'APARTMENT', label: '🏠 Орон сууц' },
+    { value: 'LEASE', label: '🔑 Түрээс' },
     { value: 'MUSAR', label: '🏪 Мусар' },
     { value: 'BASEMENT', label: '🔧 Подвал' },
+    { value: 'PARKING', label: '🚗 Граж' },
+    { value: 'STORAGE', label: '📦 Агуулах' },
 ];
 
 /** Empty form state */
@@ -19,6 +22,7 @@ const emptyForm = {
     buildingName: '', entrance: '', floor: 0, unitNumber: '',
     unitType: 'APARTMENT', ownerId: '', tenantId: '',
     leaseStartDate: '', leaseEndDate: '', contractId: '',
+    parentApartmentId: '',
 };
 
 export default function Residents() {
@@ -60,13 +64,13 @@ export default function Residents() {
         setEditId(null);
         setForm({
             ...emptyForm,
-            unitType: activeTab === 'leased' ? 'MUSAR' : 'APARTMENT',
+            unitType: activeTab === 'leased' ? 'LEASE' : 'APARTMENT',
         });
         setError('');
         setShowModal(true);
     };
 
-    const openEditModal = (apt: Apartment) => {
+    const openEditModal = (apt: any) => {
         setEditId(apt.id);
         setForm({
             buildingName: apt.buildingName,
@@ -79,6 +83,7 @@ export default function Residents() {
             leaseStartDate: apt.leaseStartDate ? apt.leaseStartDate.slice(0, 10) : '',
             leaseEndDate: apt.leaseEndDate ? apt.leaseEndDate.slice(0, 10) : '',
             contractId: apt.contractId ?? '',
+            parentApartmentId: apt.parentApartmentId ?? '',
         });
         setError('');
         setShowModal(true);
@@ -104,6 +109,7 @@ export default function Residents() {
                 leaseStartDate: form.leaseStartDate || undefined,
                 leaseEndDate: form.leaseEndDate || undefined,
                 contractId: form.contractId || undefined,
+                parentApartmentId: form.parentApartmentId || undefined,
             };
 
             if (editId) {
@@ -224,12 +230,20 @@ export default function Residents() {
                                     <td className="px-5 py-3.5 text-slate-600 font-medium">{apt.unitNumber}</td>
                                     {isLeaseTab && (
                                         <td className="px-5 py-3.5">
-                                            <span className={`text-xs font-bold px-3 py-1.5 rounded-lg ${apt.unitType === 'MUSAR'
-                                                ? 'bg-amber-100 text-amber-700'
-                                                : 'bg-purple-100 text-purple-700'
+                                            <span className={`text-xs font-bold px-3 py-1.5 rounded-lg ${apt.unitType === 'MUSAR' ? 'bg-amber-100 text-amber-700' :
+                                                    apt.unitType === 'LEASE' ? 'bg-blue-100 text-blue-700' :
+                                                    apt.unitType === 'PARKING' ? 'bg-emerald-100 text-emerald-700' :
+                                                    apt.unitType === 'STORAGE' ? 'bg-indigo-100 text-indigo-700' :
+                                                        apt.unitType === 'BASEMENT' ? 'bg-slate-200 text-slate-800' :
+                                                            'bg-purple-100 text-purple-700'
                                                 }`}>
                                                 {UNIT_TYPES.find(t => t.value === apt.unitType)?.label ?? apt.unitType}
                                             </span>
+                                            {(apt as any).parentApartmentId && (
+                                                <div className="text-[10px] text-slate-500 mt-1">
+                                                    Холбоотой: {apartmentUnits.find(a => a.id === (apt as any).parentApartmentId)?.unitNumber || '...'}
+                                                </div>
+                                            )}
                                         </td>
                                     )}
                                     <td className="px-5 py-3.5 text-slate-700 font-medium">
@@ -338,6 +352,25 @@ export default function Residents() {
                                 ))}
                             </select>
                         </div>
+
+                        {/* Parent Apartment Link (For Parking/Storage) */}
+                        {(form.unitType === 'PARKING' || form.unitType === 'STORAGE') && (
+                            <div className="mb-4">
+                                <label className="text-xs font-semibold text-slate-600 mb-1 flex items-center gap-1">
+                                    <Building2 size={12} /> Холбогдох Орон Сууц
+                                </label>
+                                <select
+                                    className="w-full bg-slate-50 text-slate-900 px-3 py-2 rounded-lg border border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none text-sm"
+                                    value={form.parentApartmentId}
+                                    onChange={e => setForm({ ...form, parentApartmentId: e.target.value })}
+                                >
+                                    <option value="">— Холбохгүй —</option>
+                                    {apartmentUnits.map(a => (
+                                        <option key={a.id} value={a.id}>{a.buildingName} - {a.unitNumber}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
 
                         {/* Divider — Lease section */}
                         <div className="border-t border-slate-200 pt-4 mt-2 mb-4">

@@ -25,11 +25,18 @@ const fileFilter = (
     file: Express.Multer.File,
     cb: multer.FileFilterCallback
 ): void => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+        'application/vnd.ms-excel' // .xls
+    ];
     if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed'));
+        cb(new Error('Only image files (JPEG, PNG, GIF, WebP) and Excel files (.xls, .xlsx) are allowed'));
     }
 };
 

@@ -13,6 +13,7 @@ export interface CreateApartmentInput {
     leaseStartDate?: string | Date;
     leaseEndDate?: string | Date;
     contractId?: string;
+    parentApartmentId?: string;
 }
 
 /** Shape of the update apartment request body */
@@ -27,6 +28,7 @@ export interface UpdateApartmentInput {
     leaseStartDate?: string | Date | null;
     leaseEndDate?: string | Date | null;
     contractId?: string | null;
+    parentApartmentId?: string | null;
 }
 
 /**
@@ -48,6 +50,7 @@ export const createApartment = async (input: CreateApartmentInput): Promise<Apar
             leaseStartDate: input.leaseStartDate ? new Date(input.leaseStartDate) : null,
             leaseEndDate: input.leaseEndDate ? new Date(input.leaseEndDate) : null,
             contractId: input.contractId ?? null,
+            parentApartmentId: input.parentApartmentId ?? null,
         },
     });
 
@@ -78,6 +81,7 @@ export const updateApartment = async (id: string, input: UpdateApartmentInput): 
         data.leaseEndDate = input.leaseEndDate ? new Date(input.leaseEndDate) : null;
     }
     if (input.contractId !== undefined) data.contractId = input.contractId;
+    if (input.parentApartmentId !== undefined) data.parentApartmentId = input.parentApartmentId;
 
     const apartment = await prisma.apartment.update({
         where: { id },
@@ -109,6 +113,8 @@ export const getAllApartments = async (): Promise<Apartment[]> => {
                     role: true,
                 },
             },
+            parentApartment: true,
+            childApartments: true,
         },
         orderBy: { createdAt: 'desc' },
     });
@@ -131,7 +137,10 @@ export const getMyApartments = async (userId: string): Promise<Apartment[]> => {
                 { tenantId: userId },                    // Explicit tenant
             ],
         },
-        orderBy: { buildingName: 'asc', unitNumber: 'asc' },
+        orderBy: [
+            { buildingName: 'asc' },
+            { unitNumber: 'asc' }
+        ],
     });
 
     return apartments;

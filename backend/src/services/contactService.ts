@@ -1,7 +1,8 @@
 import prisma from '../lib/prisma';
 
-export const getAllContacts = async () => {
+export const getAllContacts = async (organizationId?: string | null) => {
     return prisma.contact.findMany({
+        where: { organizationId: organizationId || null },
         orderBy: { createdAt: 'desc' },
     });
 };
@@ -11,6 +12,7 @@ export const createContact = async (data: {
     phone: string;
     role: string;
     description?: string;
+    organizationId?: string | null;
 }) => {
     return prisma.contact.create({
         data,

@@ -20,7 +20,8 @@ export const createFaqController = async (req: Request, res: Response, next: Nex
             return;
         }
 
-        const faq = await createFaq(question, answer, order);
+        const organizationId = (req as any).user?.organizationId;
+        const faq = await createFaq(question, answer, order, organizationId);
         res.status(201).json({ success: true, message: 'FAQ created successfully', data: faq });
     } catch (error) {
         next(error);
@@ -29,7 +30,8 @@ export const createFaqController = async (req: Request, res: Response, next: Nex
 
 export const getFaqsController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const faqs = await getAllFaqs();
+        const organizationId = (req as any).user?.organizationId;
+        const faqs = await getAllFaqs(organizationId);
         res.status(200).json({ success: true, message: 'FAQs retrieved', data: faqs });
     } catch (error) {
         next(error);
@@ -65,7 +67,7 @@ export const deleteFaqController = async (req: Request, res: Response, next: Nex
 export const getStaticContentController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const type = req.params.type as string;
-        const content = await getStaticContent(type);
+        const content = await getStaticContent(type, (req as any).user?.organizationId);
 
         if (!content) {
             res.status(404).json({ success: false, message: 'Content not found' });
@@ -88,7 +90,7 @@ export const upsertStaticContentController = async (req: Request, res: Response,
             return;
         }
 
-        const updated = await upsertStaticContent(type, title, content);
+        const updated = await upsertStaticContent(type, title, content, (req as any).user?.organizationId);
         res.status(200).json({ success: true, message: 'Content saved successfully', data: updated });
     } catch (error) {
         next(error);

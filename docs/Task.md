@@ -88,8 +88,11 @@ This file tracks the step-by-step development tasks. The AI Agent must pick task
 - [x] **Task 12.2:** Categorized Work Plans: Update `WorkPlan` model with a `category` enum (REGULAR, SCHEDULED, AD_HOC). Update Web Admin UI to filter tasks by these tabs.
 - [x] **Task 12.3:** Mobile Static Content: Add menu items in the Account section for "СӨХ-ийн дүрэм журам" (Rules), "Түгээмэл асуултууд" (FAQ), and "Лавлагаа" (Inquiries) with clean text UI.
 
-## Phase 13: AI Chatbot (Upcoming)
-- [ ] **Task 13.1:** Integrate Gemini API for smart resident assistance.
+## Phase 16: Multi-Tenancy Database Migration
+- [x] **Task 16.1:** Multi-Tenancy Schema Migration: Add `organizationId` to `Contact` and `Faq` models. Update backend services (`contactService`, `contentService`) to filter and create records associated strictly with the logged-in user's `organizationId`. Sync DB via `prisma db push`.
+
+## Phase 13: AI Chatbot (Completed)
+- [x] **Task 13.1:** Integrate Gemini API for smart resident assistance. (Migrated to local Ollama using `doomgrave/gemma3`).
 
 ## Phase 14: Mobile App UX/UI & Resident Features
 - [x] **Task 14.1:** Multi-Property Management: Backend `GET /api/apartments/my-apartments` to fetch all properties linked to the user. Mobile App `HomeScreen` carousel to switch between properties and filter invoices/tickets.
@@ -99,9 +102,15 @@ This file tracks the step-by-step development tasks. The AI Agent must pick task
 - [x] **Task 14.5:** Contacts Directory: `ContactDirectory` model + CRUD. Web Admin page to manage. Mobile App screen to view and call numbers.
 
 ## Phase 15: Advanced Admin Operations & Accounting
-- [ ] **Task 15.1:** Expanded Unit Types: Add PARKING, STORAGE to `unitType`. Add `parentApartmentId`. Web admin UI updates.
-- [ ] **Task 15.2:** Excel Import for Bulk Invoicing: `POST /api/invoices/bulk-import` to parse `.xlsx` and create invoices. Web Admin dropzone UI.
-- [ ] **Task 15.3:** Manual Bank Statement Reconciliation: `BankStatement` model. Excel upload. Split-screen Web Admin UI to match un-matched bank transfers with unpaid invoices.
-- [ ] **Task 15.4:** Detailed Transaction Transparency: `FinancialTransaction` model linked to Monthly Reports. Mobile timeline view.
-- [ ] **Task 15.5:** Downloadable PDF Reports: Generate PDF for monthly financial transparency.
-- [ ] **Task 15.6:** Advanced Invoice Management (Export & Filter): Update Web Admin `Invoices` page with advanced filtering (Paid/Pending/Overdue, Date Range) and an "Export to Excel" (`xlsx` download) feature for accountants.
+- [x] **Task 15.1:** Expanded Unit Types: Add PARKING, STORAGE to `unitType`. Add `parentApartmentId`. Web admin UI updates.
+- [x] **Task 15.2:** Excel Import for Bulk Invoicing: `POST /api/invoices/bulk-import` to parse `.xlsx` and create invoices. Web Admin dropzone UI.
+- [x] **Task 15.3:** Manual Bank Statement Reconciliation: `BankStatement` model. Excel upload. Split-screen Web Admin UI to match un-matched bank transfers with unpaid invoices.
+- [x] **Task 15.4:** Detailed Transaction Transparency: `FinancialTransaction` model linked to Monthly Reports. Mobile timeline view.
+- [x] **Task 15.5:** Downloadable PDF Reports: Generate PDF for monthly financial transparency.
+- [x] **Task 15.6:** Advanced Invoice Management (Export & Filter): Update Web Admin `Invoices` page with advanced filtering (Paid/Pending/Overdue, Date Range) and an "Export to Excel" (`xlsx` download) feature for accountants.
+
+## Phase 17: Production Readiness & CI/CD
+- [x] **Task 17.1:** Security Hardening: Install `helmet` and `express-rate-limit` on the backend. Secure HTTP headers and apply rate limiting to prevent brute-force and DDoS attacks.
+- [x] **Task 17.2:** Error Tracking (Sentry): Install and configure Sentry on both the Backend and Mobile App to track real-time crashes and unhandled exceptions using environment variables for DSNs.
+- [ ] **Task 17.3:** Database Indexing & Performance: Add `@index` to heavily queried Prisma fields (e.g., unitNumber, status) to optimize database read performance.
+- [ ] **Task 17.4:** CI/CD Pipeline Setup: Create a GitHub Actions workflow `.github/workflows/main.yml` to automatically lint, build, and test the backend and web-admin on every push.

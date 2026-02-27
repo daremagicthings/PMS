@@ -52,6 +52,16 @@ export const getAllFinancialReports = async (): Promise<FinancialReport[]> => {
 };
 
 /**
+ * Retrieves a single financial report by ID, including its associated transactions.
+ */
+export const getFinancialReportById = async (id: string) => {
+    return prisma.financialReport.findUnique({
+        where: { id },
+        include: { transactions: { orderBy: { date: 'asc' } } }
+    });
+};
+
+/**
  * Updates an existing financial report by ID.
  *
  * @param id - Financial report UUID

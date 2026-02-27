@@ -74,7 +74,7 @@ export interface Invoice {
     dueDate: string;
     paidAt: string | null;
     apartmentId: string;
-    apartment?: Pick<Apartment, 'id' | 'buildingName' | 'unitNumber' | 'entrance' | 'floor'>;
+    apartment?: Pick<Apartment, 'id' | 'buildingName' | 'unitNumber' | 'entrance' | 'floor'> & { residents?: Pick<User, 'name' | 'phone'>[] };
     createdAt: string;
     updatedAt: string;
 }
@@ -149,6 +149,18 @@ export interface FinancialReport {
     updatedAt: string;
 }
 
+export interface FinancialTransaction {
+    id: string;
+    date: string;
+    amount: number;
+    receiverSender: string;
+    description: string;
+    type: 'INCOME' | 'EXPENSE';
+    reportId: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 // ─── Auth ───────────────────────────────────────────────
 
 export const authApi = {
@@ -183,11 +195,23 @@ export const userApi = {
 // ─── Invoices ───────────────────────────────────────────
 
 export const invoiceApi = {
-    getAll: () => api.get<ApiResponse<Invoice[]>>('/invoices'),
+    getAll: (filters?: { status?: string, startDate?: string, endDate?: string, apartmentId?: string }) => {
+        const query = new URLSearchParams();
+        if (filters?.status && filters.status !== 'ALL') query.append('status', filters.status);
+        if (filters?.startDate) query.append('startDate', filters.startDate);
+        if (filters?.endDate) query.append('endDate', filters.endDate);
+        if (filters?.apartmentId) query.append('apartmentId', filters.apartmentId);
+        const qs = query.toString();
+        return api.get<ApiResponse<Invoice[]>>(`/invoices${qs ? `?${qs}` : ''}`);
+    },
     create: (data: { apartmentId: string; amount: number; description?: string; dueDate: string }) =>
         api.post<ApiResponse<Invoice>>('/invoices', data),
     markAsPaid: (id: string) => api.put<ApiResponse<Invoice>>(`/invoices/${id}/pay`),
     calculatePenalties: () => api.post<ApiResponse<{ penalizedCount: number }>>('/invoices/calculate-penalties'),
+    bulkImport: (formData: FormData) =>
+        api.post<ApiResponse<any>>('/invoices/bulk-import', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        }),
 };
 
 // ─── Tickets ────────────────────────────────────────────
@@ -251,6 +275,15 @@ export const financialReportApi = {
         }),
     delete: (id: string) =>
         api.delete<ApiResponse<void>>(`/financial-reports/${id}`),
+};
+
+export const financialTransactionApi = {
+    getByReport: (reportId: string) => 
+        api.get<ApiResponse<FinancialTransaction[]>>(`/financial-transactions/report/${reportId}`),
+    create: (data: Omit<FinancialTransaction, 'id' | 'createdAt' | 'updatedAt'>) =>
+        api.post<ApiResponse<FinancialTransaction>>('/financial-transactions', data),
+    delete: (id: string) =>
+        api.delete<ApiResponse<void>>(`/financial-transactions/${id}`),
 };
 
 // ─── Notifications ──────────────────────────────────────
@@ -369,6 +402,28 @@ export interface Contact {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface BankStatement {
+    id: string;
+    date: string;
+    amount: number;
+    description: string;
+    status: 'PENDING' | 'MATCHED';
+    matchedInvoiceId: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export const bankStatementApi = {
+    getPending: () => api.get<ApiResponse<BankStatement[]>>('/bank-statements/pending'),
+    upload: (formData: FormData) =>
+        api.post<ApiResponse<any>>('/bank-statements/upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        }),
+    autoMatch: () => api.post<ApiResponse<{ matchedCount: number }>>('/bank-statements/auto-match'),
+    manualMatch: (statementId: string, invoiceId: string) =>
+        api.post<ApiResponse<any>>(`/bank-statements/${statementId}/match`, { invoiceId }),
+};
 
 export const contactApi = {
     getAll: () => api.get<ApiResponse<Contact[]>>('/contacts'),

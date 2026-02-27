@@ -23,16 +23,16 @@ export interface UpdateTicketStatusInput {
  * @throws Error if user or apartment not found
  */
 export const createTicket = async (input: CreateTicketInput): Promise<Ticket> => {
-    // Verify user exists
+    // Verify user exists to provide a friendly error message
     const user = await prisma.user.findUnique({ where: { id: input.userId } });
     if (!user) {
-        throw new Error(`User with ID ${input.userId} not found`);
+        throw new Error(`Бүртгэл олдсонгүй (User not found). Бааз шинэчлэгдсэн тул та 'Log out' хийгээд дахин нэвтэрнэ үү.`);
     }
 
     // Verify apartment exists
     const apartment = await prisma.apartment.findUnique({ where: { id: input.apartmentId } });
     if (!apartment) {
-        throw new Error(`Apartment with ID ${input.apartmentId} not found`);
+        throw new Error(`Байрны мэдээлэл олдсонгүй (Apartment not found). Та 'Log out' хийгээд дахин нэвтэрнэ үү.`);
     }
 
     const ticket = await prisma.ticket.create({

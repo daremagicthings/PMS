@@ -14,6 +14,9 @@ import pollRoutes from './pollRoutes';
 import vehicleRoutes from './vehicleRoutes';
 import contentRoutes from './contentRoutes';
 import contactRoutes from './contactRoutes';
+import bankStatementRoutes from './bankStatementRoutes';
+import financialTransactionRoutes from './financialTransactionRoutes';
+import aiRoutes from './aiRoutes';
 
 /**
  * Central route aggregator.
@@ -48,6 +51,7 @@ router.use('/notifications', notificationRoutes);
 // ─── Transparency & Reporting ───────────────────────────
 router.use('/work-plans', workPlanRoutes);
 router.use('/financial-reports', financialReportRoutes);
+router.use('/financial-transactions', financialTransactionRoutes);
 
 // ─── Polls (Digital Voting) ─────────────────────────────
 router.use('/polls', pollRoutes);
@@ -60,6 +64,12 @@ router.use('/content', contentRoutes);
 
 // ─── Contacts Directory ─────────────────────────────────
 router.use('/contacts', contactRoutes);
+
+// ─── Bank Statement Reconciliation ──────────────────────
+router.use('/bank-statements', bankStatementRoutes);
+
+// ─── AI Chatbot ─────────────────────────────────────────
+router.use('/ai', aiRoutes);
 
 // ─── Webhooks (Public — external payment callbacks) ─────
 router.use('/webhooks/qpay', webhookRoutes);

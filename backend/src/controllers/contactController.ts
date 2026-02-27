@@ -3,7 +3,8 @@ import * as contactService from '../services/contactService';
 
 export const getContacts = async (req: Request, res: Response) => {
     try {
-        const contacts = await contactService.getAllContacts();
+        const organizationId = (req as any).user?.organizationId;
+        const contacts = await contactService.getAllContacts(organizationId);
         res.json({ success: true, data: contacts });
     } catch (error) {
         console.error('getContacts error:', error);
@@ -21,7 +22,8 @@ export const createContact = async (req: Request, res: Response) => {
         if (!name || !phone || !role) {
             return res.status(400).json({ success: false, message: 'Missing required fields' });
         }
-        const newContact = await contactService.createContact({ name, phone, role, description });
+        const organizationId = (req as any).user?.organizationId;
+        const newContact = await contactService.createContact({ name, phone, role, description, organizationId });
         res.status(201).json({ success: true, data: newContact });
     } catch (error) {
         console.error('createContact error:', error);

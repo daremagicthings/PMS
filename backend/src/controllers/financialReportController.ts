@@ -1,12 +1,72 @@
 import { Request, Response, NextFunction } from 'express';
+import PDFDocument from 'pdfkit';
 import {
     createFinancialReport,
     getAllFinancialReports,
     updateFinancialReport,
     deleteFinancialReport,
+    getFinancialReportById,
     CreateFinancialReportInput,
     UpdateFinancialReportInput,
 } from '../services/financialReportService';
+
+export const downloadPdfController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const id = req.params.id as string;
+        const report = await getFinancialReportById(id);
+
+        if (!report) {
+            res.status(404).json({ success: false, message: 'Report not found' });
+            return;
+        }
+
+        const doc = new PDFDocument({ margin: 50 });
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=SOH_Report_${report.year}_${report.month}.pdf`);
+
+        doc.pipe(res);
+
+        // Header
+        doc.fontSize(24).font('Helvetica-Bold').text('SOH SYSTEM', { align: 'center' });
+        doc.fontSize(16).font('Helvetica').text(`Financial Transparency Report`, { align: 'center' });
+        doc.moveDown();
+        doc.fontSize(14).text(`Period: ${report.year} / ${report.month}`, { align: 'center' });
+        doc.moveDown(2);
+
+        // Summary
+        doc.fontSize(14).font('Helvetica-Bold').text('Summary');
+        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+        doc.moveDown();
+        doc.fontSize(12).font('Helvetica');
+        doc.text(`Total Income: MNT ${report.totalIncome.toLocaleString()}`);
+        doc.text(`Total Expense: MNT ${report.totalExpense.toLocaleString()}`);
+        const balance = report.totalIncome - report.totalExpense;
+        doc.text(`Net Balance: MNT ${balance.toLocaleString()}`);
+        doc.moveDown(2);
+
+        // Transactions
+        doc.fontSize(14).font('Helvetica-Bold').text('Detailed Transactions');
+        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+        doc.moveDown();
+
+        if (report.transactions && report.transactions.length > 0) {
+            report.transactions.forEach((t) => {
+                doc.fontSize(12).font('Helvetica-Bold').text(`${t.date.toISOString().split('T')[0]} - ${t.type}`);
+                doc.fontSize(10).font('Helvetica').text(`Amount: MNT ${t.amount.toLocaleString()}`);
+                doc.text(`Description: ${t.description}`);
+                doc.text(`Sender/Receiver: ${t.receiverSender}`);
+                doc.moveDown(0.5);
+            });
+        } else {
+            doc.fontSize(12).font('Helvetica-Oblique').text('No detailed transactions found for this period.');
+        }
+
+        doc.end();
+    } catch (error) {
+        next(error instanceof Error ? error : new Error('Unknown error during PDF generation'));
+    }
+};
 
 /**
  * Controller for POST /api/financial-reports

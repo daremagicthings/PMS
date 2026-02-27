@@ -9,6 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'soh-dev-secret-key';
 interface JwtPayload {
     userId: string;
     role: Role;
+    organizationId?: string | null;
 }
 
 /**
@@ -57,6 +58,7 @@ export const authMiddleware = async (
         req.user = {
             userId: decoded.userId,
             role: decoded.role,
+            organizationId: decoded.organizationId,
         };
 
         next();

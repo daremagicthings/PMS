@@ -4,18 +4,28 @@ import { Bell, Check, CheckCheck } from 'lucide-react';
 import { notificationApi, userApi } from '../services/api';
 import type { AppNotification } from '../services/api';
 
-/**
- * Notification bell icon with dropdown panel.
- * Shows unread count badge and recent notifications.
- * Clicking a notification marks it read and navigates to the related page.
- */
+const timeAgo = (dateStr: string, nowTime: number) => {
+    const diff = nowTime - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    return `${Math.floor(hrs / 24)}d ago`;
+};
+
 export default function NotificationDropdown() {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [notifications, setNotifications] = useState<AppNotification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [adminId, setAdminId] = useState<string | null>(null);
+    const [now, setNow] = useState(Date.now());
     const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (open) setNow(Date.now());
+    }, [open]);
 
     // Fetch admin user ID
     useEffect(() => {
@@ -106,17 +116,6 @@ export default function NotificationDropdown() {
         }
     };
 
-    const timeAgo = (dateStr: string) => {
-        const now = Date.now();
-        const diff = now - new Date(dateStr).getTime();
-        const mins = Math.floor(diff / 60000);
-        if (mins < 1) return 'just now';
-        if (mins < 60) return `${mins}m ago`;
-        const hrs = Math.floor(mins / 60);
-        if (hrs < 24) return `${hrs}h ago`;
-        return `${Math.floor(hrs / 24)}d ago`;
-    };
-
     return (
         <div className="relative" ref={ref}>
             <button
@@ -165,7 +164,7 @@ export default function NotificationDropdown() {
                                             {n.title}
                                         </p>
                                         <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{n.message}</p>
-                                        <p className="text-[10px] text-slate-400 mt-1">{timeAgo(n.createdAt)}</p>
+                                        <p className="text-[10px] text-slate-400 mt-1">{timeAgo(n.createdAt, now)}</p>
                                     </div>
                                     {!n.isRead && (
                                         <div className="mt-1">

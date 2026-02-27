@@ -13,8 +13,9 @@ datasource db {
 // ─── ENUMS ──────────────────────────────────────────────
 
 enum Role {
-  ADMIN
-  RESIDENT
+  SUPER_ADMIN // System owner (you)
+  ADMIN       // Organization manager
+  RESIDENT    // Apartment resident
 }
 
 enum InvoiceStatus {
@@ -44,6 +45,29 @@ enum PollStatus {
 
 // ─── MODELS ─────────────────────────────────────────────
 
+/// Represents a distinct Property Management Company / СӨХ Entity (Multi-Tenant).
+model Organization {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  contactInfo String?
+  isActive    Boolean  @default(true)
+
+  users            User[]
+  apartments       Apartment[]
+  announcements    Announcement[]
+  workPlans        WorkPlan[]
+  financialReports FinancialReport[]
+  polls            Poll[]
+  staticContents   StaticContent[]
+  contacts         Contact[]
+  faqs             Faq[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("organizations")
+}
+
 /// Represents an Admin or Resident user in the system.
 model User {
   id           String   @id @default(uuid())
@@ -58,6 +82,9 @@ model User {
   ebarimtType     String   @default("CITIZEN")
   /// E-Barimt Registry Number (Company TTDD or Person ID)
   ebarimtRegNo    String?
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   apartment   Apartment? @relation(fields: [apartmentId], references: [id], onDelete: SetNull)
   apartmentId String?
@@ -82,7 +109,7 @@ model Apartment {
   floor        Int
   unitNumber   String
 
-  /// Unit classification: "APARTMENT" | "MUSAR" | "BASEMENT"
+  /// Category: "APARTMENT" | "MUSAR" | "BASEMENT" | "PARKING" | "STORAGE"
   unitType       String    @default("APARTMENT")
   /// Owner of the unit (nullable — may not have a registered owner)
   ownerId        String?
@@ -94,6 +121,14 @@ model Apartment {
   leaseEndDate   DateTime?
   /// External contract reference ID
   contractId     String?
+
+  /// Parent linked Apartment (Used for nested Parking/Storage assignments)
+  parentApartmentId String?
+  parentApartment   Apartment?  @relation("ApartmentHierarchy", fields: [parentApartmentId], references: [id])
+  childApartments   Apartment[] @relation("ApartmentHierarchy")
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   residents User[]
   invoices  Invoice[]
@@ -128,7 +163,26 @@ model Invoice {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  bankStatements BankStatement[]
+
   @@map("invoices")
+}
+
+/// Represents an external bank statement record used for invoice reconciliation.
+model BankStatement {
+  id              String   @id @default(uuid())
+  date            DateTime
+  amount          Float
+  description     String
+  status          String   @default("PENDING") // PENDING, MATCHED
+
+  matchedInvoiceId String?
+  matchedInvoice   Invoice? @relation(fields: [matchedInvoiceId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bank_statements")
 }
 
 /// Represents a maintenance request or complaint submitted by a resident.
@@ -159,8 +213,11 @@ model Announcement {
   content     String
   meetingLink String?
 
-  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -221,6 +278,9 @@ model WorkPlan {
   /// Category: "REGULAR" | "SCHEDULED" | "AD_HOC"
   category     String         @default("REGULAR")
 
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -252,11 +312,34 @@ model FinancialReport {
   description  String?
   imageUrl     String?
 
+  transactions FinancialTransaction[]
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([month, year])
+  @@unique([month, year, organizationId])
   @@map("financial_reports")
+}
+
+/// Represents a detailed financial transaction (Income or Expense) within a monthly report.
+model FinancialTransaction {
+  id             String   @id @default(uuid())
+  date           DateTime
+  amount         Float
+  receiverSender String
+  description    String
+  type           String   @default("INCOME") // INCOME, EXPENSE
+
+  reportId       String
+  report         FinancialReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("financial_transactions")
 }
 
 /// Represents a digital vote/poll created by an Admin.
@@ -266,6 +349,9 @@ model Poll {
   description String?
   status      PollStatus @default(ACTIVE)
   endDate     DateTime?
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   options PollOption[]
   votes   PollVote[]
@@ -314,13 +400,17 @@ model PollVote {
 model StaticContent {
   id      String @id @default(uuid())
   /// Type of content, e.g., "RULES", "INQUIRIES"
-  type    String @unique
+  type    String 
   title   String
   content String
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([type, organizationId])
   @@map("static_content")
 }
 
@@ -331,6 +421,9 @@ model Contact {
   phone       String
   role        String
   description String?
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -344,6 +437,9 @@ model Faq {
   question String
   answer   String
   order    Int    @default(0)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

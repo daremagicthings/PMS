@@ -5,10 +5,15 @@ import {
     markInvoiceAsPaidController,
     getEbarimtController,
     calculatePenaltiesController,
+    bulkImportInvoicesController,
 } from '../controllers/invoiceController';
 import { createQpayInvoiceController } from '../controllers/qpayController';
+import { uploadSingle } from '../middlewares/uploadMiddleware';
 
 const router = Router();
+
+/** POST /api/invoices/bulk-import — Admin bulk imports invoices from Excel */
+router.post('/bulk-import', uploadSingle, bulkImportInvoicesController);
 
 /** POST /api/invoices — Admin creates a new invoice */
 router.post('/', createInvoiceController);
