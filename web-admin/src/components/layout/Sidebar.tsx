@@ -15,21 +15,41 @@ import {
 } from 'lucide-react';
 
 /**
- * Navigation items for the sidebar.
+ * Navigation groups for the sidebar.
  */
-const navItems = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/residents', label: 'Residents', icon: Users },
-    { to: '/invoices', label: 'Invoices', icon: Receipt },
-    { to: '/reconciliation', label: 'Тулгалт', icon: FileText },
-    { to: '/tickets', label: 'Tickets', icon: Ticket },
-    { to: '/announcements', label: 'Announcements', icon: Megaphone },
-    { to: '/work-plans', label: 'Work Plans', icon: ClipboardList },
-    { to: '/financials', label: 'Financials', icon: BarChart3 },
-    { to: '/polls', label: 'Polls', icon: Vote },
-    { to: '/vehicles', label: 'Vehicles', icon: Car },
-    { to: '/content', label: 'Мэдээлэл', icon: FileText },
-    { to: '/contacts', label: 'Харилцах', icon: BookUser },
+const menuGroups = [
+    {
+        label: 'Үндсэн',
+        items: [
+            { to: '/', label: 'Хянах самбар', icon: LayoutDashboard },
+            { to: '/residents', label: 'Оршин суугчид', icon: Users },
+            { to: '/vehicles', label: 'Тээврийн хэрэгсэл', icon: Car },
+        ]
+    },
+    {
+        label: 'Үйл ажиллагаа',
+        items: [
+            { to: '/tickets', label: 'Санал гомдол', icon: Ticket },
+            { to: '/work-plans', label: 'Ажлын төлөвлөгөө', icon: ClipboardList },
+            { to: '/announcements', label: 'Зарлал', icon: Megaphone },
+            { to: '/polls', label: 'Санал асуулга', icon: Vote },
+        ]
+    },
+    {
+        label: 'Санхүү',
+        items: [
+            { to: '/invoices', label: 'Нэхэмжлэл', icon: Receipt },
+            { to: '/reconciliation', label: 'Тулгалт', icon: FileText },
+            { to: '/financials', label: 'Санхүү', icon: BarChart3 },
+        ]
+    },
+    {
+        label: 'Мэдээлэл',
+        items: [
+            { to: '/content', label: 'Мэдээлэл', icon: FileText },
+            { to: '/contacts', label: 'Харилцах', icon: BookUser },
+        ]
+    }
 ];
 
 /**
@@ -55,21 +75,30 @@ export default function Sidebar() {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-                {navItems.map((item) => (
-                    <NavLink
-                        key={item.to}
-                        to={item.to}
-                        className={({ isActive }) =>
-                            `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
-                                ? 'bg-blue-600/20 text-blue-400 shadow-sm'
-                                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                            }`
-                        }
-                    >
-                        <item.icon size={18} />
-                        <span>{item.label}</span>
-                    </NavLink>
+            <nav className="flex-1 px-3 py-4 overflow-y-auto">
+                {menuGroups.map((group, groupIndex) => (
+                    <div key={group.label} className={groupIndex > 0 ? "mt-6" : ""}>
+                        <h2 className="px-4 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                            {group.label}
+                        </h2>
+                        <div className="space-y-1">
+                            {group.items.map((item) => (
+                                <NavLink
+                                    key={item.to}
+                                    to={item.to}
+                                    className={({ isActive }) =>
+                                        `flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
+                                            ? 'bg-blue-600/20 text-blue-400 shadow-sm'
+                                            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                                        }`
+                                    }
+                                >
+                                    <item.icon size={18} />
+                                    <span>{item.label}</span>
+                                </NavLink>
+                            ))}
+                        </div>
+                    </div>
                 ))}
             </nav>
 

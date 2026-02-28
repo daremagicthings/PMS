@@ -112,9 +112,9 @@ export default function Financials() {
             await fetchReports();
         } catch (err: any) {
             if (err.response?.status === 409) {
-                alert(`A report for ${MONTH_NAMES[month]} ${year} already exists.`);
+                alert(`${year} оны ${MONTH_NAMES[month]}-р сарын тайлан аль хэдийн үүссэн байна.`);
             } else {
-                alert('Failed to save financial report');
+                alert('Санхүүгийн тайлан хадгалахад алдаа гарлаа');
             }
         } finally {
             setSubmitting(false);
@@ -123,7 +123,7 @@ export default function Financials() {
 
     const handleDelete = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (!confirm('Are you sure you want to delete this financial report?')) return;
+        if (!confirm('Энэ тайланг устгахдаа итгэлтэй байна уу?')) return;
         try {
             await financialReportApi.delete(id);
             await fetchReports();
@@ -151,14 +151,14 @@ export default function Financials() {
             fetchTransactions(selectedReport.id);
         } catch (err) {
             console.error('Failed to add transaction', err);
-            alert('Failed to add transaction');
+            alert('Гүйлгээ нэмэхэд алдаа гарлаа');
         } finally {
             setSubmittingTx(false);
         }
     };
 
     const handleDeleteTransaction = async (id: string) => {
-        if (!confirm('Delete this transaction?')) return;
+        if (!confirm('Энэ гүйлгээг устгах уу?')) return;
         try {
             await financialTransactionApi.delete(id);
             if (selectedReport) fetchTransactions(selectedReport.id);
@@ -176,22 +176,22 @@ export default function Financials() {
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
                         <BarChart3 size={28} className="text-emerald-600" />
-                        <h1 className="text-2xl font-bold text-slate-800">Financial Reports</h1>
+                        <h1 className="text-2xl font-bold text-slate-800">Санхүүгийн тайлан</h1>
                     </div>
                     <button
                         onClick={openCreateModal}
                         className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors font-medium"
                     >
-                        <Plus size={18} /> Add Report
+                        <Plus size={18} /> Тайлан нэмэх
                     </button>
                 </div>
 
                 {loading ? (
-                    <p className="text-slate-400">Loading...</p>
+                    <p className="text-slate-400">Уншиж байна...</p>
                 ) : reports.length === 0 ? (
                     <div className="text-center py-16 bg-white rounded-xl border border-slate-200">
                         <BarChart3 size={48} className="mx-auto text-slate-300 mb-3" />
-                        <p className="text-slate-400">No financial reports yet. Click "Add Report" to get started.</p>
+                        <p className="text-slate-400">Санхүүгийн тайлан олдсонгүй. 'Тайлан нэмэх' дээр дарж эхэлнэ үү.</p>
                     </div>
                 ) : (
                     <div className="grid gap-4">
@@ -213,22 +213,22 @@ export default function Financials() {
                                 {/* Center: Info */}
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-bold text-slate-800 text-lg">
-                                        {MONTH_NAMES[report.month]} {report.year}
+                                        {report.year} оны {MONTH_NAMES[report.month]}-р сар
                                     </h3>
                                     {report.description && (
                                         <p className="text-sm text-slate-500 mt-1 truncate">{report.description}</p>
                                     )}
                                     <div className="flex gap-6 mt-3">
                                         <div>
-                                            <span className="text-xs text-slate-400 uppercase font-medium">Income</span>
+                                            <span className="text-xs text-slate-400 uppercase font-medium">Орлого</span>
                                             <p className="text-lg font-bold text-green-600">{formatCurrency(report.totalIncome)}</p>
                                         </div>
                                         <div>
-                                            <span className="text-xs text-slate-400 uppercase font-medium">Expense</span>
+                                            <span className="text-xs text-slate-400 uppercase font-medium">Зарлага</span>
                                             <p className="text-lg font-bold text-red-500">{formatCurrency(report.totalExpense)}</p>
                                         </div>
                                         <div>
-                                            <span className="text-xs text-slate-400 uppercase font-medium">Balance</span>
+                                            <span className="text-xs text-slate-400 uppercase font-medium">Үлдэгдэл</span>
                                             <p className={`text-lg font-bold ${report.totalIncome - report.totalExpense >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                                                 {formatCurrency(report.totalIncome - report.totalExpense)}
                                             </p>
@@ -241,14 +241,14 @@ export default function Financials() {
                                     <button
                                         onClick={(e) => openEditModal(report, e)}
                                         className="text-slate-400 hover:text-blue-600 p-1.5 transition-colors"
-                                        title="Edit"
+                                        title="Засах"
                                     >
                                         <Pencil size={16} />
                                     </button>
                                     <button
                                         onClick={(e) => handleDelete(report.id, e)}
                                         className="text-slate-400 hover:text-red-600 p-1.5 transition-colors"
-                                        title="Delete"
+                                        title="Устгах"
                                     >
                                         <Trash2 size={16} />
                                     </button>
@@ -266,7 +266,7 @@ export default function Financials() {
                         <div>
                             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                                 <ArrowRightLeft size={18} className="text-emerald-600" />
-                                {MONTH_NAMES[selectedReport.month]} {selectedReport.year} Transactions
+                                {selectedReport.year} оны {MONTH_NAMES[selectedReport.month]}-р сар - Гүйлгээнүүд
                             </h2>
                         </div>
                         <button onClick={() => setSelectedReport(null)} className="text-slate-400 hover:text-slate-700 bg-white rounded-full p-1 border">
@@ -276,12 +276,12 @@ export default function Financials() {
 
                     <div className="flex-1 overflow-y-auto p-5 bg-slate-50/50">
                         {/* Transaction List */}
-                        <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Line Items</h3>
+                        <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Гүйлгээний жагсаалт</h3>
                         {loadingTx ? (
-                            <p className="text-sm text-slate-400 text-center py-4">Loading...</p>
+                            <p className="text-sm text-slate-400 text-center py-4">Уншиж байна...</p>
                         ) : transactions.length === 0 ? (
                             <div className="text-center py-8 bg-white border border-dashed rounded-lg mb-6">
-                                <p className="text-sm text-slate-400">No transactions recorded.</p>
+                                <p className="text-sm text-slate-400">Бүртгэгдсэн гүйлгээ алга.</p>
                             </div>
                         ) : (
                             <div className="space-y-3 mb-8">
@@ -290,7 +290,7 @@ export default function Financials() {
                                         <div>
                                             <div className="flex items-center gap-2 mb-1">
                                                 <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${tx.type === 'INCOME' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                                    {tx.type}
+                                                    {tx.type === 'INCOME' ? 'Орлого' : 'Зарлага'}
                                                 </span>
                                                 <span className="text-xs text-slate-500">{new Date(tx.date).toLocaleDateString()}</span>
                                             </div>
@@ -312,22 +312,22 @@ export default function Financials() {
 
                         {/* Add Form */}
                         <div className="bg-white p-4 rounded-xl border border-slate-200">
-                            <h3 className="text-sm font-semibold text-slate-800 mb-4">Add New Item</h3>
+                            <h3 className="text-sm font-semibold text-slate-800 mb-4">Шинэ гүйлгээ нэмэх</h3>
                             <form onSubmit={handleAddTransaction} className="space-y-3">
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="block text-xs font-medium text-slate-600 mb-1">Type</label>
+                                        <label className="block text-xs font-medium text-slate-600 mb-1">Төрөл</label>
                                         <select
                                             value={txType}
                                             onChange={(e) => setTxType(e.target.value as any)}
                                             className="w-full border border-slate-300 rounded-md px-2 py-1.5 text-sm outline-none focus:border-emerald-500"
                                         >
-                                            <option value="INCOME">Income (+)</option>
-                                            <option value="EXPENSE">Expense (-)</option>
+                                            <option value="INCOME">Орлого (+)</option>
+                                            <option value="EXPENSE">Зарлага (-)</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-slate-600 mb-1">Date</label>
+                                        <label className="block text-xs font-medium text-slate-600 mb-1">Огноо</label>
                                         <input
                                             type="date"
                                             value={txDate}
@@ -338,7 +338,7 @@ export default function Financials() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Amount (₮)</label>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">Дүн (₮)</label>
                                     <input
                                         type="number"
                                         value={txAmount}
@@ -349,24 +349,24 @@ export default function Financials() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">{txType === 'INCOME' ? 'Sender (From)' : 'Receiver (To)'}</label>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">{txType === 'INCOME' ? 'Илгээгч' : 'Хүлээн авагч'}</label>
                                     <input
                                         type="text"
                                         value={txReceiverSender}
                                         onChange={(e) => setTxReceiverSender(e.target.value)}
                                         required
-                                        placeholder="e.g. Khan Bank, Contractor..."
+                                        placeholder="Жнь: Хаан банк, Гүйцэтгэгч..."
                                         className="w-full border border-slate-300 rounded-md px-2 py-1.5 text-sm outline-none focus:border-emerald-500"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-slate-600 mb-1">Description</label>
+                                    <label className="block text-xs font-medium text-slate-600 mb-1">Гүйлгээний утга</label>
                                     <input
                                         type="text"
                                         value={txDescription}
                                         onChange={(e) => setTxDescription(e.target.value)}
                                         required
-                                        placeholder="e.g. Monthly maintenance fee"
+                                        placeholder="Жнь: Сарын хураамж"
                                         className="w-full border border-slate-300 rounded-md px-2 py-1.5 text-sm outline-none focus:border-emerald-500"
                                     />
                                 </div>
@@ -375,7 +375,7 @@ export default function Financials() {
                                     disabled={submittingTx}
                                     className="w-full mt-2 bg-emerald-600 text-white rounded-md py-2 text-sm font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50"
                                 >
-                                    {submittingTx ? 'Adding...' : 'Add Line Item'}
+                                    {submittingTx ? 'Нэмж байна...' : 'Гүйлгээ нэмэх'}
                                 </button>
                             </form>
                         </div>
@@ -389,7 +389,7 @@ export default function Financials() {
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-5">
                             <h2 className="text-lg font-bold text-slate-800">
-                                {editReport ? 'Edit Financial Report' : 'Add Financial Report'}
+                                {editReport ? 'Санхүүгийн тайлан засах' : 'Санхүүгийн тайлан нэмэх'}
                             </h2>
                             <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">
                                 <X size={20} />
@@ -399,19 +399,19 @@ export default function Financials() {
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-600 mb-1">Month</label>
+                                    <label className="block text-sm font-medium text-slate-600 mb-1">Сар</label>
                                     <select
                                         value={month}
                                         onChange={(e) => setMonth(Number(e.target.value))}
                                         className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                                     >
                                         {MONTH_NAMES.slice(1).map((name, i) => (
-                                            <option key={i + 1} value={i + 1}>{name}</option>
+                                            <option key={i + 1} value={i + 1}>{i + 1}-р сар</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-600 mb-1">Year</label>
+                                    <label className="block text-sm font-medium text-slate-600 mb-1">Жил</label>
                                     <input
                                         type="number"
                                         value={year}
@@ -422,7 +422,7 @@ export default function Financials() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-600 mb-1">Total Income (₮)</label>
+                                    <label className="block text-sm font-medium text-slate-600 mb-1">Нийт орлого (₮)</label>
                                     <input
                                         type="number"
                                         value={totalIncome}
@@ -432,7 +432,7 @@ export default function Financials() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-600 mb-1">Total Expense (₮)</label>
+                                    <label className="block text-sm font-medium text-slate-600 mb-1">Нийт зарлага (₮)</label>
                                     <input
                                         type="number"
                                         value={totalExpense}
@@ -443,17 +443,17 @@ export default function Financials() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-600 mb-1">Description (optional)</label>
+                                <label className="block text-sm font-medium text-slate-600 mb-1">Тайлбар (заавал биш)</label>
                                 <textarea
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     rows={2}
                                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none resize-none"
-                                    placeholder="Summary of this month's financials..."
+                                    placeholder="Тайлангийн хураангуй..."
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-600 mb-1">Receipt / Chart Image (optional)</label>
+                                <label className="block text-sm font-medium text-slate-600 mb-1">Баримт / Графикийн зураг (заавал биш)</label>
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -468,14 +468,14 @@ export default function Financials() {
                                 onClick={() => setShowModal(false)}
                                 className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium"
                             >
-                                Cancel
+                                Цуцлах
                             </button>
                             <button
                                 onClick={handleSubmit}
                                 disabled={submitting || !totalIncome || !totalExpense}
                                 className="px-5 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                {submitting ? 'Saving...' : editReport ? 'Update' : 'Create'}
+                                {submitting ? 'Хадгалж байна...' : editReport ? 'Шинэчлэх' : 'Үүсгэх'}
                             </button>
                         </div>
                     </div>

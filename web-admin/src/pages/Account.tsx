@@ -35,11 +35,11 @@ export default function Account() {
         setFeedback(null);
 
         if (newPassword !== confirmPassword) {
-            setFeedback({ type: 'error', message: 'New passwords do not match!' });
+            setFeedback({ type: 'error', message: 'Шинэ нууц үгүүд хоорондоо таарахгүй байна!' });
             return;
         }
         if (newPassword.length < 6) {
-            setFeedback({ type: 'error', message: 'Password must be at least 6 characters.' });
+            setFeedback({ type: 'error', message: 'Нууц үг хамгийн багадаа 6 тэмдэгттэй байх ёстой.' });
             return;
         }
 
@@ -58,16 +58,16 @@ export default function Account() {
             // Step 2: Call the password change endpoint
             const res = await authApi.changePassword(currentPassword, newPassword);
             if (res.data.success) {
-                setFeedback({ type: 'success', message: 'Password updated successfully! ✅' });
+                setFeedback({ type: 'success', message: 'Нууц үг амжилттай шинэчлэгдлээ! ✅' });
                 setCurrentPassword('');
                 setNewPassword('');
                 setConfirmPassword('');
             } else {
-                setFeedback({ type: 'error', message: res.data.message || 'Failed to change password.' });
+                setFeedback({ type: 'error', message: res.data.message || 'Нууц үг солиход алдаа гарлаа.' });
             }
         } catch (err: unknown) {
             const error = err as { response?: { data?: { message?: string } } };
-            const msg = error.response?.data?.message || 'Failed to change password. Please check your current password.';
+            const msg = error.response?.data?.message || 'Нууц үг солиход алдаа гарлаа. Одоогийн нууц үгээ шалгана уу.';
             setFeedback({ type: 'error', message: msg });
         } finally {
             setSaving(false);
@@ -103,15 +103,15 @@ export default function Account() {
 
                     <div className="mt-6 grid grid-cols-2 gap-4">
                         <div className="bg-slate-50 rounded-lg p-4">
-                            <p className="text-xs text-slate-400 font-medium">Phone</p>
+                            <p className="text-xs text-slate-400 font-medium">Утас</p>
                             <p className="text-sm font-semibold text-slate-700 mt-1">{admin?.phone || '—'}</p>
                         </div>
                         <div className="bg-slate-50 rounded-lg p-4">
-                            <p className="text-xs text-slate-400 font-medium">Email</p>
-                            <p className="text-sm font-semibold text-slate-700 mt-1">{admin?.email || 'Not set'}</p>
+                            <p className="text-xs text-slate-400 font-medium">Цахим шуудан</p>
+                            <p className="text-sm font-semibold text-slate-700 mt-1">{admin?.email || 'Оруулаагүй'}</p>
                         </div>
                         <div className="bg-slate-50 rounded-lg p-4">
-                            <p className="text-xs text-slate-400 font-medium">Role</p>
+                            <p className="text-xs text-slate-400 font-medium">Эрх</p>
                             <p className="text-sm font-semibold text-slate-700 mt-1">
                                 <span className="inline-flex items-center gap-1">
                                     <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -120,7 +120,7 @@ export default function Account() {
                             </p>
                         </div>
                         <div className="bg-slate-50 rounded-lg p-4">
-                            <p className="text-xs text-slate-400 font-medium">User ID</p>
+                            <p className="text-xs text-slate-400 font-medium">Хэрэглэгчийн ID</p>
                             <p className="text-xs font-mono text-slate-500 mt-1 truncate">{admin?.id}</p>
                         </div>
                     </div>
@@ -129,7 +129,7 @@ export default function Account() {
 
             {/* Change Password */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                <h3 className="text-base font-semibold text-slate-800 mb-4">🔒 Change Password</h3>
+                <h3 className="text-base font-semibold text-slate-800 mb-4">🔒 Нууц үг солих</h3>
 
                 {/* Feedback message */}
                 {feedback && (
@@ -145,35 +145,35 @@ export default function Account() {
 
                 <form onSubmit={handlePasswordChange} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-slate-600 mb-1">Current Password</label>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Одоогийн нууц үг</label>
                         <input
                             type="password"
                             value={currentPassword}
                             onChange={(e) => setCurrentPassword(e.target.value)}
                             className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                            placeholder="Enter current password"
+                            placeholder="Одоогийн нууц үгээ оруулна уу"
                             required
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-600 mb-1">New Password</label>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Шинэ нууц үг</label>
                         <input
                             type="password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
                             className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                            placeholder="At least 6 characters"
+                            placeholder="Хамгийн багадаа 6 тэмдэгт"
                             required
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-600 mb-1">Confirm New Password</label>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Шинэ нууц үг баталгаажуулах</label>
                         <input
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                            placeholder="Repeat new password"
+                            placeholder="Шинэ нууц үгээ дахин оруулна уу"
                             required
                         />
                     </div>
@@ -182,7 +182,7 @@ export default function Account() {
                         disabled={saving}
                         className="px-6 py-2.5 bg-blue-500 text-white font-medium text-sm rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        {saving ? 'Saving...' : 'Update Password'}
+                        {saving ? 'Хадгалж байна...' : 'Нууц үг шинэчлэх'}
                     </button>
                 </form>
             </div>

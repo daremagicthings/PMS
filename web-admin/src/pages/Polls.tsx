@@ -44,7 +44,7 @@ export default function Polls() {
     const handleCreate = async () => {
         const validOptions = options.filter((o) => o.trim());
         if (!title.trim() || validOptions.length < 2) {
-            alert('Title and at least 2 options are required');
+            alert('Гарчиг болон хамгийн багадаа 2 сонголт шаардлагатай');
             return;
         }
         setSubmitting(true);
@@ -59,7 +59,7 @@ export default function Polls() {
             setShowForm(false);
             fetchPolls();
         } catch {
-            alert('Failed to create poll');
+            alert('Санал асуулга үүсгэхэд алдаа гарлаа');
         } finally {
             setSubmitting(false);
         }
@@ -67,12 +67,12 @@ export default function Polls() {
 
     // ── Close poll ──────────────────────────────────────
     const handleClose = async (pollId: string) => {
-        if (!confirm('Are you sure you want to close this poll? This cannot be undone.')) return;
+        if (!confirm('Та энэ санал асуулгыг хаахдаа итгэлтэй байна уу?')) return;
         try {
             await pollApi.close(pollId);
             fetchPolls();
         } catch {
-            alert('Failed to close poll');
+            alert('Санал асуулга хаахад алдаа гарлаа');
         }
     };
 
@@ -108,7 +108,7 @@ export default function Polls() {
                     onClick={() => setShowForm(!showForm)}
                     className="px-5 py-2.5 bg-linear-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-indigo-500/25"
                 >
-                    {showForm ? '✕ Cancel' : '+ New Poll'}
+                    {showForm ? '✕ Цуцлах' : '+ Шинэ асуулга'}
                 </button>
             </div>
 

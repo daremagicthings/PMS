@@ -123,13 +123,13 @@ export default function Announcements() {
         <div className="space-y-6">
             {/* Top bar */}
             <div className="flex items-center justify-between">
-                <p className="text-sm text-slate-500">{announcements.length} announcements</p>
+                <p className="text-sm text-slate-500">Нийт {announcements.length} зарлал</p>
                 <button
                     onClick={() => { setShowForm(!showForm); setEditingId(null); }}
                     className="flex items-center gap-2 px-4 py-2.5 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors"
                 >
                     {showForm ? <X size={16} /> : <Plus size={16} />}
-                    {showForm ? 'Cancel' : 'New Announcement'}
+                    {showForm ? 'Цуцлах' : 'Шинэ зарлал'}
                 </button>
             </div>
 
@@ -139,31 +139,31 @@ export default function Announcements() {
                     onSubmit={handleCreate}
                     className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4"
                 >
-                    <h3 className="text-base font-semibold text-slate-800">Create Announcement</h3>
+                    <h3 className="text-base font-semibold text-slate-800">Зарлал үүсгэх</h3>
                     <div>
-                        <label className="block text-sm font-medium text-slate-600 mb-1">Title</label>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Гарчиг</label>
                         <input
                             type="text"
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
-                            placeholder="Announcement title"
+                            placeholder="Зарлалын гарчиг"
                             required
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-600 mb-1">Content</label>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Агуулга</label>
                         <textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             rows={4}
                             className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
-                            placeholder="Write your announcement here..."
+                            placeholder="Зарлалаа энд бичнэ үү..."
                             required
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-600 mb-1">Meeting Link (optional)</label>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Уулзалтын холбоос (заавал биш)</label>
                         <input
                             type="url"
                             value={meetingLink}
@@ -178,7 +178,7 @@ export default function Announcements() {
                             disabled={saving || !title.trim() || !content.trim()}
                             className="px-6 py-2.5 bg-blue-500 text-white font-medium text-sm rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
-                            {saving ? 'Posting...' : '📢 Post Announcement'}
+                            {saving ? 'Нийтэлж байна...' : '📢 Зарлал нийтлэх'}
                         </button>
                     </div>
                 </form>
@@ -187,7 +187,7 @@ export default function Announcements() {
             {/* Announcements list */}
             {announcements.length === 0 ? (
                 <div className="bg-white rounded-xl border border-slate-200 p-12 text-center text-slate-400">
-                    No announcements yet — click "New Announcement" to create one
+                    Зарлал алга — "Шинэ зарлал" товчийг дарж үүсгэнэ үү
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -212,7 +212,7 @@ export default function Announcements() {
                                         type="url"
                                         value={editMeetingLink}
                                         onChange={(e) => setEditMeetingLink(e.target.value)}
-                                        placeholder="Meeting link (optional)"
+                                        placeholder="Уулзалтын холбоос (заавал биш)"
                                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-400"
                                     />
                                     <div className="flex gap-2 justify-end">
@@ -220,14 +220,14 @@ export default function Announcements() {
                                             onClick={() => setEditingId(null)}
                                             className="px-3 py-1.5 text-xs font-medium text-slate-500 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
                                         >
-                                            Cancel
+                                            Цуцлах
                                         </button>
                                         <button
                                             onClick={handleUpdate}
                                             disabled={saving}
                                             className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors"
                                         >
-                                            <Save size={12} /> {saving ? 'Saving...' : 'Save'}
+                                            <Save size={12} /> {saving ? 'Хадгалж байна...' : 'Хадгалах'}
                                         </button>
                                     </div>
                                 </div>
@@ -240,14 +240,14 @@ export default function Announcements() {
                                             <button
                                                 onClick={() => startEdit(a)}
                                                 className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-blue-500 transition-colors"
-                                                title="Edit"
+                                                title="Засах"
                                             >
                                                 <Pencil size={14} />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(a.id)}
                                                 className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
-                                                title="Delete"
+                                                title="Устгах"
                                             >
                                                 <Trash2 size={14} />
                                             </button>
@@ -258,7 +258,7 @@ export default function Announcements() {
                                     </div>
                                     <p className="text-sm text-slate-600 leading-relaxed mb-4 whitespace-pre-wrap">{a.content}</p>
                                     <div className="flex items-center justify-between">
-                                        <p className="text-xs text-slate-400">by {a.createdBy?.name || 'Admin'}</p>
+                                        <p className="text-xs text-slate-400">{a.createdBy?.name || 'Админ'} нийтэлсэн</p>
                                         {a.meetingLink && (
                                             <a
                                                 href={a.meetingLink}
@@ -266,7 +266,7 @@ export default function Announcements() {
                                                 rel="noopener noreferrer"
                                                 className="inline-flex items-center gap-1 text-xs px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium"
                                             >
-                                                <ExternalLink size={12} /> Join Meeting
+                                                <ExternalLink size={12} /> Уулзалтад нэгдэх
                                             </a>
                                         )}
                                     </div>

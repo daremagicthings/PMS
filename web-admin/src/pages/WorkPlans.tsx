@@ -94,7 +94,7 @@ export default function WorkPlans() {
             await fetchPlans();
         } catch (err) {
             console.error('Failed to save work plan:', err);
-            alert('Failed to save work plan');
+            alert('Хадгалахад алдаа гарлаа');
         } finally {
             setSubmitting(false);
         }
@@ -112,7 +112,7 @@ export default function WorkPlans() {
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this work plan?')) return;
+        if (!confirm('Та энэ төлөвлөгөөг устгахдаа итгэлтэй байна уу?')) return;
         try {
             await workPlanApi.delete(id);
             await fetchPlans();
@@ -126,13 +126,13 @@ export default function WorkPlans() {
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <ClipboardList size={28} className="text-blue-600" />
-                    <h1 className="text-2xl font-bold text-slate-800">Work Plans</h1>
+                    <h1 className="text-2xl font-bold text-slate-800">Ажлын төлөвлөгөө</h1>
                 </div>
                 <button
                     onClick={openCreateModal}
                     className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
-                    <Plus size={18} /> Add Work Plan
+                    <Plus size={18} /> Төлөвлөгөө нэмэх
                 </button>
             </div>
 
@@ -163,14 +163,14 @@ export default function WorkPlans() {
                     : plans;
 
                 return loading ? (
-                    <p className="text-slate-400">Loading...</p>
+                    <p className="text-slate-400">Уншиж байна...</p>
                 ) : filteredPlans.length === 0 ? (
                     <div className="text-center py-16 bg-white rounded-xl border border-slate-200">
                         <ClipboardList size={48} className="mx-auto text-slate-300 mb-3" />
                         <p className="text-slate-400">
                             {activeCategory
                                 ? `"${CATEGORY_TABS.find(t => t.key === activeCategory)?.label}" ангилалд ажлын төлөвлөгөө байхгүй`
-                                : 'No work plans yet. Click "Add Work Plan" to get started.'}
+                                : 'Ажлын төлөвлөгөө алга. "Төлөвлөгөө нэмэх" товчийг дарж эхэлнэ үү.'}
                         </p>
                     </div>
                 ) : (
@@ -178,13 +178,13 @@ export default function WorkPlans() {
                         <table className="w-full text-sm">
                             <thead className="bg-slate-50 text-slate-500 uppercase text-xs">
                                 <tr>
-                                    <th className="px-5 py-3 text-left">Title</th>
-                                    <th className="px-5 py-3 text-left">Description</th>
-                                    <th className="px-5 py-3 text-left">Category</th>
-                                    <th className="px-5 py-3 text-left">Status</th>
-                                    <th className="px-5 py-3 text-left">Expected Date</th>
-                                    <th className="px-5 py-3 text-left">Image</th>
-                                    <th className="px-5 py-3 text-right">Actions</th>
+                                    <th className="px-5 py-3 text-left">Гарчиг</th>
+                                    <th className="px-5 py-3 text-left">Тайлбар</th>
+                                    <th className="px-5 py-3 text-left">Төрөл</th>
+                                    <th className="px-5 py-3 text-left">Төлөв</th>
+                                    <th className="px-5 py-3 text-left">Хүлээгдэж буй огноо</th>
+                                    <th className="px-5 py-3 text-left">Зураг</th>
+                                    <th className="px-5 py-3 text-right">Үйлдэл</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -203,9 +203,9 @@ export default function WorkPlans() {
                                                 onChange={(e) => handleStatusChange(plan, e.target.value)}
                                                 className={`text-xs font-semibold px-2 py-1 rounded-full border-0 cursor-pointer ${STATUS_COLORS[plan.status]}`}
                                             >
-                                                <option value="PLANNED">Planned</option>
-                                                <option value="IN_PROGRESS">In Progress</option>
-                                                <option value="COMPLETED">Completed</option>
+                                                <option value="PLANNED">Төлөвлөсөн</option>
+                                                <option value="IN_PROGRESS">Хийгдэж буй</option>
+                                                <option value="COMPLETED">Дууссан</option>
                                             </select>
                                         </td>
                                         <td className="px-5 py-3 text-slate-500">
@@ -226,14 +226,14 @@ export default function WorkPlans() {
                                             <button
                                                 onClick={() => openEditModal(plan)}
                                                 className="text-slate-400 hover:text-blue-600 mr-2 transition-colors"
-                                                title="Edit"
+                                                title="Засах"
                                             >
                                                 <Pencil size={16} />
                                             </button>
                                             <button
                                                 onClick={() => handleDelete(plan.id)}
                                                 className="text-slate-400 hover:text-red-600 transition-colors"
-                                                title="Delete"
+                                                title="Устгах"
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -251,7 +251,7 @@ export default function WorkPlans() {
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-5">
                             <h2 className="text-lg font-bold text-slate-800">
-                                {editPlan ? 'Edit Work Plan' : 'Add Work Plan'}
+                                {editPlan ? 'Төлөвлөгөө засах' : 'Төлөвлөгөө нэмэх'}
                             </h2>
                             <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">
                                 <X size={20} />
@@ -260,39 +260,39 @@ export default function WorkPlans() {
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-600 mb-1">Title</label>
+                                <label className="block text-sm font-medium text-slate-600 mb-1">Гарчиг</label>
                                 <input
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
                                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                    placeholder="e.g. Elevator Maintenance"
+                                    placeholder="Жнь: Лифтний засвар"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-600 mb-1">Description</label>
+                                <label className="block text-sm font-medium text-slate-600 mb-1">Тайлбар</label>
                                 <textarea
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     rows={3}
                                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
-                                    placeholder="Details about the work plan..."
+                                    placeholder="Ажлын дэлгэрэнгүй..."
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-600 mb-1">Status</label>
+                                    <label className="block text-sm font-medium text-slate-600 mb-1">Төлөв</label>
                                     <select
                                         value={status}
                                         onChange={(e) => setStatus(e.target.value as typeof status)}
                                         className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                     >
-                                        <option value="PLANNED">Planned</option>
-                                        <option value="IN_PROGRESS">In Progress</option>
-                                        <option value="COMPLETED">Completed</option>
+                                        <option value="PLANNED">Төлөвлөсөн</option>
+                                        <option value="IN_PROGRESS">Хийгдэж буй</option>
+                                        <option value="COMPLETED">Дууссан</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-600 mb-1">Category</label>
+                                    <label className="block text-sm font-medium text-slate-600 mb-1">Төрөл</label>
                                     <select
                                         value={category}
                                         onChange={(e) => setCategory(e.target.value)}
@@ -306,7 +306,7 @@ export default function WorkPlans() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-600 mb-1">Expected Date</label>
+                                    <label className="block text-sm font-medium text-slate-600 mb-1">Огноо</label>
                                     <input
                                         type="date"
                                         value={expectedDate}
@@ -316,7 +316,7 @@ export default function WorkPlans() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-600 mb-1">Image (optional)</label>
+                                <label className="block text-sm font-medium text-slate-600 mb-1">Зураг (заавал биш)</label>
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -331,14 +331,14 @@ export default function WorkPlans() {
                                 onClick={() => setShowModal(false)}
                                 className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium"
                             >
-                                Cancel
+                                Цуцлах
                             </button>
                             <button
                                 onClick={handleSubmit}
                                 disabled={submitting || !title || !description || !expectedDate}
                                 className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                {submitting ? 'Saving...' : editPlan ? 'Update' : 'Create'}
+                                {submitting ? 'Хадгалж байна...' : editPlan ? 'Шинэчлэх' : 'Үүсгэх'}
                             </button>
                         </div>
                     </div>

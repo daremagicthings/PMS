@@ -142,32 +142,32 @@ export default function Dashboard() {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
-                    title="Total Collected"
+                    title="Нийт цуглуулсан"
                     value={`₮${totalCollected.toLocaleString()}`}
                     icon={DollarSign}
                     color="bg-gradient-to-br from-emerald-500 to-emerald-600"
-                    subtitle={`${invoices.filter(i => i.status === 'PAID').length} paid invoices`}
+                    subtitle={`${invoices.filter(i => i.status === 'PAID').length} төлөгдсөн нэхэмжлэл`}
                 />
                 <StatCard
-                    title="Unpaid Amount"
+                    title="Төлөгдөөгүй дүн"
                     value={`₮${totalUnpaid.toLocaleString()}`}
                     icon={AlertTriangle}
                     color="bg-gradient-to-br from-amber-500 to-orange-500"
-                    subtitle={`${invoices.filter(i => i.status === 'PENDING').length} pending invoices`}
+                    subtitle={`${invoices.filter(i => i.status === 'PENDING').length} хүлээгдэж буй нэхэмжлэл`}
                 />
                 <StatCard
-                    title="Active Tickets"
+                    title="Идэвхтэй санал гомдол"
                     value={activeTickets}
                     icon={Ticket}
                     color="bg-gradient-to-br from-blue-500 to-indigo-600"
-                    subtitle={`${tickets.length} total tickets`}
+                    subtitle={`Нийт ${tickets.length} санал гомдол`}
                 />
                 <StatCard
-                    title="Total Apartments"
+                    title="Нийт айл өрх"
                     value={apartments.length}
                     icon={Users}
                     color="bg-gradient-to-br from-violet-500 to-purple-600"
-                    subtitle="Registered units"
+                    subtitle="Бүртгэлтэй нэгжүүд"
                 />
             </div>
 
@@ -175,7 +175,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Monthly Revenue Bar Chart */}
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                    <h3 className="text-base font-semibold text-slate-800 mb-4">Monthly Revenue</h3>
+                    <h3 className="text-base font-semibold text-slate-800 mb-4">Сарын орлого</h3>
                     <ResponsiveContainer width="100%" height={280}>
                         <BarChart data={monthlyData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -208,10 +208,10 @@ export default function Dashboard() {
 
                 {/* Ticket Status Pie Chart */}
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                    <h3 className="text-base font-semibold text-slate-800 mb-4">Ticket Status Breakdown</h3>
+                    <h3 className="text-base font-semibold text-slate-800 mb-4">Санал гомдлын төлөв</h3>
                     {ticketStatusData.length === 0 ? (
                         <div className="flex items-center justify-center h-[280px]">
-                            <p className="text-sm text-slate-400">No tickets yet</p>
+                            <p className="text-sm text-slate-400">Санал гомдол алга</p>
                         </div>
                     ) : (
                         <ResponsiveContainer width="100%" height={280}>

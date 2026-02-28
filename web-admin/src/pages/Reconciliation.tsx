@@ -25,7 +25,7 @@ export default function Reconciliation() {
             if (invRes.data.success) setInvoices(invRes.data.data || []);
         } catch (error) {
             console.error('Failed to fetch data', error);
-            alert('Failed to load reconciliation data.');
+            alert('Тулгалтын мэдээлэл уншихад алдаа гарлаа.');
         } finally {
             setLoading(false);
         }
@@ -46,13 +46,13 @@ export default function Reconciliation() {
         try {
             const res = await bankStatementApi.upload(formData);
             if (res.data.success) {
-                alert(`Uploaded successfully. ${res.data.data?.successCount} imported.`);
+                alert(`Амжилттай хууллаа. ${res.data.data?.successCount} мэдээлэл орлоо.`);
                 fetchData();
             } else {
-                alert(`Upload failed: ${res.data.message}`);
+                alert(`Хуулахад алдаа гарлаа: ${res.data.message}`);
             }
         } catch (error: any) {
-            alert(`Error: ${error.message}`);
+            alert(`Алдаа: ${error.message}`);
         } finally {
             setUploading(false);
             e.target.value = '';
@@ -64,13 +64,13 @@ export default function Reconciliation() {
         try {
             const res = await bankStatementApi.autoMatch();
             if (res.data.success) {
-                alert(`Auto-matched ${res.data.data?.matchedCount} statements!`);
+                alert(`${res.data.data?.matchedCount} хуулгыг автоматаар тулгалаа!`);
                 fetchData();
             } else {
-                alert(`Auto-match failed: ${res.data.message}`);
+                alert(`Автомат тулгалтад алдаа гарлаа: ${res.data.message}`);
             }
         } catch (error: any) {
-            alert(`Error: ${error.message}`);
+            alert(`Алдаа: ${error.message}`);
         } finally {
             setAutoMatching(false);
         }
@@ -82,15 +82,15 @@ export default function Reconciliation() {
         try {
             const res = await bankStatementApi.manualMatch(selectedStatementId, selectedInvoiceId);
             if (res.data.success) {
-                alert('Matched successfully!');
+                alert('Амжилттай тулгалаа!');
                 setSelectedStatementId(null);
                 setSelectedInvoiceId(null);
                 fetchData();
             } else {
-                alert(`Match failed: ${res.data.message}`);
+                alert(`Тулгахад алдаа гарлаа: ${res.data.message}`);
             }
         } catch (error: any) {
-            alert(`Error: ${error.message}`);
+            alert(`Алдаа: ${error.message}`);
         }
     };
 

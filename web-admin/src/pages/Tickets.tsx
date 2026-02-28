@@ -4,6 +4,11 @@ import type { Ticket } from '../services/api';
 import TicketDetailModal from '../components/TicketDetailModal';
 
 const STATUS_OPTIONS = ['NEW', 'IN_PROGRESS', 'RESOLVED'] as const;
+const STATUS_LABELS: Record<string, string> = {
+    'NEW': 'Шинэ',
+    'IN_PROGRESS': 'Хийгдэж буй',
+    'RESOLVED': 'Шийдэгдсэн'
+};
 
 /**
  * Tickets page — table with status dropdown for admin to update ticket progress.
@@ -63,19 +68,19 @@ export default function Tickets() {
     return (
         <div className="space-y-6">
             <p className="text-sm text-slate-500">
-                {tickets.length} total · {tickets.filter(t => t.status === 'NEW').length} new · {tickets.filter(t => t.status === 'IN_PROGRESS').length} in progress
+                Нийт {tickets.length} · {tickets.filter(t => t.status === 'NEW').length} шинэ · {tickets.filter(t => t.status === 'IN_PROGRESS').length} хийгдэж буй
             </p>
 
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="bg-slate-50 border-b border-slate-200">
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Title</th>
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Submitted By</th>
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Apartment</th>
+                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Гарчиг</th>
+                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Илгээсэн</th>
+                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Орон сууц</th>
                             <th className="text-center px-6 py-3 font-semibold text-slate-600">💬</th>
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Date</th>
-                            <th className="text-center px-6 py-3 font-semibold text-slate-600">Status</th>
+                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Огноо</th>
+                            <th className="text-center px-6 py-3 font-semibold text-slate-600">Төлөв</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -106,7 +111,7 @@ export default function Tickets() {
                                         className={`text-xs font-medium px-3 py-1.5 rounded-lg border cursor-pointer outline-none ${statusColor(t.status)}`}
                                     >
                                         {STATUS_OPTIONS.map((s) => (
-                                            <option key={s} value={s}>{s.replace('_', ' ')}</option>
+                                            <option key={s} value={s}>{STATUS_LABELS[s] || s}</option>
                                         ))}
                                     </select>
                                 </td>
@@ -114,7 +119,7 @@ export default function Tickets() {
                         ))}
                         {tickets.length === 0 && (
                             <tr>
-                                <td colSpan={6} className="px-6 py-12 text-center text-slate-400">No tickets found</td>
+                                <td colSpan={6} className="px-6 py-12 text-center text-slate-400">Санал гомдол олдсонгүй</td>
                             </tr>
                         )}
                     </tbody>

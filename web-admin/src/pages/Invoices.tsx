@@ -135,19 +135,19 @@ export default function Invoices() {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <p className="text-sm text-slate-500">{invoices.length} total invoices</p>
+                <p className="text-sm text-slate-500">Нийт {invoices.length} нэхэмжлэл</p>
                 <div className="flex gap-2">
                     <button
                         onClick={handleExport}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors text-sm font-medium shadow-sm"
                     >
-                        <Download size={16} /> Export
+                        <Download size={16} /> Экспортлох
                     </button>
                     <button
                         onClick={() => setShowImportModal(true)}
                         className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm"
                     >
-                        <Upload size={16} /> Bulk Import
+                        <Upload size={16} /> Багцаар оруулах
                     </button>
                 </div>
             </div>
@@ -156,7 +156,7 @@ export default function Invoices() {
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap gap-4 items-center">
                 <div className="flex items-center gap-2 text-slate-600">
                     <Filter size={18} />
-                    <span className="text-sm font-medium">Filters:</span>
+                    <span className="text-sm font-medium">Шүүлтүүр:</span>
                 </div>
 
                 <select
@@ -164,10 +164,10 @@ export default function Invoices() {
                     onChange={e => setStatusFilter(e.target.value)}
                     className="border border-slate-200 rounded-lg text-sm px-3 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                    <option value="ALL">All Statuses</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="PAID">Paid</option>
-                    <option value="CANCELLED">Cancelled</option>
+                    <option value="ALL">Бүх төлөв</option>
+                    <option value="PENDING">Хүлээгдэж буй</option>
+                    <option value="PAID">Төлөгдсөн</option>
+                    <option value="CANCELLED">Цуцлагдсан</option>
                 </select>
 
                 <div className="flex items-center gap-2">
@@ -177,7 +177,7 @@ export default function Invoices() {
                         onChange={e => setStartDate(e.target.value)}
                         className="border border-slate-200 rounded-lg text-sm px-3 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <span className="text-slate-400 text-sm">to</span>
+                    <span className="text-slate-400 text-sm">хүртэл</span>
                     <input
                         type="date"
                         value={endDate}
@@ -190,7 +190,7 @@ export default function Invoices() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                     <input
                         type="text"
-                        placeholder="Search by unit number..."
+                        placeholder="Тасалгааны дугаараар хайх..."
                         value={unitSearch}
                         onChange={e => setUnitSearch(e.target.value)}
                         className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
@@ -209,13 +209,13 @@ export default function Invoices() {
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="bg-slate-50 border-b border-slate-200">
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Apartment</th>
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Resident</th>
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Description</th>
-                            <th className="text-right px-6 py-3 font-semibold text-slate-600">Amount</th>
-                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Due Date</th>
-                            <th className="text-center px-6 py-3 font-semibold text-slate-600">Status</th>
-                            <th className="text-center px-6 py-3 font-semibold text-slate-600">Action</th>
+                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Орон сууц</th>
+                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Оршин суугч</th>
+                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Тайлбар</th>
+                            <th className="text-right px-6 py-3 font-semibold text-slate-600">Дүн</th>
+                            <th className="text-left px-6 py-3 font-semibold text-slate-600">Төлөх огноо</th>
+                            <th className="text-center px-6 py-3 font-semibold text-slate-600">Төлөв</th>
+                            <th className="text-center px-6 py-3 font-semibold text-slate-600">Үйлдэл</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -242,7 +242,7 @@ export default function Invoices() {
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <span className={`inline-block text-xs px-2.5 py-1 rounded-full font-medium ${statusColor(inv.status)}`}>
-                                            {inv.status}
+                                            {inv.status === 'PAID' ? 'Төлөгдсөн' : inv.status === 'PENDING' ? 'Хүлээгдэж буй' : inv.status === 'CANCELLED' ? 'Цуцлагдсан' : inv.status}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-center">
@@ -251,7 +251,7 @@ export default function Invoices() {
                                                 onClick={() => handleMarkAsPaid(inv.id)}
                                                 className="inline-flex items-center gap-1 text-xs px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors font-medium"
                                             >
-                                                <CheckCircle size={14} /> Mark Paid
+                                                <CheckCircle size={14} /> Төлсөн
                                             </button>
                                         ) : (
                                             <span className="text-xs text-slate-400">—</span>
@@ -262,7 +262,7 @@ export default function Invoices() {
                         })}
                         {invoices.length === 0 && !loading && (
                             <tr>
-                                <td colSpan={6} className="px-6 py-12 text-center text-slate-400">No invoices found</td>
+                                <td colSpan={7} className="px-6 py-12 text-center text-slate-400">Нэхэмжлэл олдсонгүй</td>
                             </tr>
                         )}
                     </tbody>
@@ -274,7 +274,7 @@ export default function Invoices() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative">
                         <div className="flex p-6 border-b border-slate-100 items-center justify-between">
-                            <h3 className="text-lg font-bold text-slate-800">Bulk Import Invoices</h3>
+                            <h3 className="text-lg font-bold text-slate-800">Нэхэмжлэл багцаар оруулах</h3>
                             <button onClick={() => { setShowImportModal(false); setImportSummary(null); }} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
                                 <X size={20} />
                             </button>
@@ -283,10 +283,10 @@ export default function Invoices() {
                             {!importSummary ? (
                                 <>
                                     <div className="text-sm text-slate-600">
-                                        Upload an Excel (.xlsx) file containing invoices. Please ensure it matches the template format exactly.
+                                        Нэхэмжлэл агуулсан Excel (.xlsx) файл оруулна уу. Загварын форматтай яг тохирч байгаа эсэхийг шалгана уу.
                                     </div>
                                     <button onClick={downloadTemplate} className="text-blue-600 hover:text-blue-700 text-sm font-medium inline-flex items-center gap-1 transition-colors">
-                                        <Download size={14} /> Download Template
+                                        <Download size={14} /> Загвар татах
                                     </button>
 
                                     <div className="mt-4 border-2 border-dashed border-slate-300 rounded-xl p-8 flex flex-col items-center justify-center text-center bg-slate-50 hover:bg-slate-100 transition-colors relative">
@@ -298,9 +298,9 @@ export default function Invoices() {
                                         />
                                         <Upload className={`mb-2 ${importFile ? 'text-blue-500' : 'text-slate-400'}`} size={32} />
                                         <span className="text-sm font-medium text-slate-700">
-                                            {importFile ? importFile.name : 'Click or drag file here'}
+                                            {importFile ? importFile.name : 'Энд дарж эсвэл файлаа чирнэ үү'}
                                         </span>
-                                        <span className="text-xs text-slate-500 mt-1">Excel formats only</span>
+                                        <span className="text-xs text-slate-500 mt-1">Зөвхөн Excel формат</span>
                                     </div>
 
                                     <button
@@ -309,25 +309,25 @@ export default function Invoices() {
                                         className="w-full mt-4 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
                                     >
                                         {importing ? (
-                                            <><div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div> Importing...</>
-                                        ) : 'Start Import'}
+                                            <><div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div> Оруулж байна...</>
+                                        ) : 'Оруулж эхлэх'}
                                     </button>
                                 </>
                             ) : (
                                 <div className="space-y-4">
                                     <div className="bg-emerald-50 text-emerald-800 p-4 rounded-xl border border-emerald-200">
                                         <h4 className="font-bold flex items-center gap-2">
-                                            <CheckCircle size={18} /> Import Complete
+                                            <CheckCircle size={18} /> Оруулалт амжилттай
                                         </h4>
-                                        <p className="mt-1 text-sm">Successfully imported {importSummary.successCount} invoices.</p>
+                                        <p className="mt-1 text-sm">{importSummary.successCount} нэхэмжлэлийг амжилттай орууллаа.</p>
                                     </div>
 
                                     {importSummary.errorCount > 0 && (
                                         <div className="bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
-                                            <h4 className="font-bold text-red-800 text-sm mb-2">{importSummary.errorCount} Errors encountered:</h4>
+                                            <h4 className="font-bold text-red-800 text-sm mb-2">{importSummary.errorCount} алдаа гарлаа:</h4>
                                             <ul className="text-xs text-red-700 space-y-1 max-h-40 overflow-y-auto pr-2">
                                                 {importSummary.errors.map((err, i) => (
-                                                    <li key={i}>Row {err.row}: {err.reason}</li>
+                                                    <li key={i}>Мөр {err.row}: {err.reason}</li>
                                                 ))}
                                             </ul>
                                         </div>
@@ -337,7 +337,7 @@ export default function Invoices() {
                                         onClick={() => { setShowImportModal(false); setImportSummary(null); }}
                                         className="w-full py-3 bg-slate-800 text-white rounded-xl font-medium hover:bg-slate-900 transition-colors"
                                     >
-                                        Close
+                                        Хаах
                                     </button>
                                 </div>
                             )}
