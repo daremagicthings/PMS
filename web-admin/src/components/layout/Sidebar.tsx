@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import {
     LayoutDashboard,
     Users,
@@ -56,8 +56,6 @@ const menuGroups = [
  * Sidebar navigation component with dark theme.
  */
 export default function Sidebar() {
-    const navigate = useNavigate();
-
     const handleLogout = () => {
         localStorage.removeItem('soh_auth');
         window.location.href = '/'; // Force a full reload to clear state and potentially trigger auth wrapper if one exists, or just clear data

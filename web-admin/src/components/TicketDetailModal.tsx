@@ -92,7 +92,6 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
         }
     };
 
-    console.log('API_BASE is:', API_BASE);
     console.log('ticket.imageUrl is:', ticket.imageUrl);
 
     return (

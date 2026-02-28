@@ -405,7 +405,7 @@ export default function Financials() {
                                         onChange={(e) => setMonth(Number(e.target.value))}
                                         className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                                     >
-                                        {MONTH_NAMES.slice(1).map((name, i) => (
+                                        {MONTH_NAMES.slice(1).map((_name, i) => (
                                             <option key={i + 1} value={i + 1}>{i + 1}-р сар</option>
                                         ))}
                                     </select>

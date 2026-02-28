@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';
 import Dashboard from './pages/Dashboard';
@@ -18,7 +19,7 @@ import Login from './pages/Login';
 /**
  * Simple auth wrapper to protect admin routes
  */
-function RequireAuth({ children }: { children: JSX.Element }) {
+function RequireAuth({ children }: { children: React.ReactNode }) {
   const auth = localStorage.getItem('soh_auth');
   if (!auth) {
     return <Navigate to="/login" replace />;

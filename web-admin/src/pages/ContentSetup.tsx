@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { contentApi } from '../services/api';
-import type { Faq, StaticContent } from '../services/api';
+import type { Faq } from '../services/api';
 
 export default function ContentSetup() {
     const [activeTab, setActiveTab] = useState<'FAQ' | 'RULES' | 'INQUIRIES'>('FAQ');
@@ -10,8 +10,8 @@ export default function ContentSetup() {
     const [loadingFaqs, setLoadingFaqs] = useState(true);
 
     // Static Content state
-    const [rulesContent, setRulesContent] = useState<StaticContent | null>(null);
-    const [inquiriesContent, setInquiriesContent] = useState<StaticContent | null>(null);
+    // const [rulesContent, setRulesContent] = useState<StaticContent | null>(null);
+    // const [inquiriesContent, setInquiriesContent] = useState<StaticContent | null>(null);
     const [rulesText, setRulesText] = useState('');
     const [inquiriesText, setInquiriesText] = useState('');
     const [loadingStatic, setLoadingStatic] = useState(true);
@@ -46,7 +46,7 @@ export default function ContentSetup() {
         try {
             const rulesRes = await contentApi.getStaticContent('RULES');
             if (rulesRes.data.success && rulesRes.data.data) {
-                setRulesContent(rulesRes.data.data);
+                // setRulesContent(rulesRes.data.data);
                 setRulesText(rulesRes.data.data.content);
             }
         } catch (error: any) {
@@ -58,7 +58,7 @@ export default function ContentSetup() {
         try {
             const inqRes = await contentApi.getStaticContent('INQUIRIES');
             if (inqRes.data.success && inqRes.data.data) {
-                setInquiriesContent(inqRes.data.data);
+                // setInquiriesContent(inqRes.data.data);
                 setInquiriesText(inqRes.data.data.content);
             }
         } catch (error: any) {

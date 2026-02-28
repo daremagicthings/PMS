@@ -22,3 +22,14 @@ Routes → Controllers → Services → Database (Prisma)
 ### Prisma Validation Error on `DATABASE_URL`
 **Issue:** Prisma throws `error: Error validating datasource db: the URL must start with the protocol postgresql://`.
 **Solution:** Ensure the `DATABASE_URL` in the `backend/.env` file is NOT wrapped in double quotes. Change `DATABASE_URL="postgresql://..."` to `DATABASE_URL=postgresql://...`. Prisma strictly parses the raw string and includes quotes if present.
+
+## General Issues
+
+### Broken Images in Web Admin (CORS)
+**Issue:** Uploaded images (like ticket attachments) are requested with a valid URL (e.g., `http://localhost:5000/uploads/...`) but fail to render due to `helmet`'s default `same-origin` Cross-Origin Resource Policy.
+**Solution:** Configure `helmet` in the backend `server.ts` to explicitly allow cross-origin requests:
+```typescript
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+```

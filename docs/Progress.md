@@ -851,3 +851,4 @@
 
 ### Task 18.4 — Mobile App EAS
 - **Mobile App:** Created `eas.json` configuring standard Expo Application Services (EAS) build profiles for `development`, `preview`, and `production`. `production` is set to generate an `.aab` file for Android and an App Store compatible build for iOS.
+`n### Bugfix`n- **Web Admin:** Fixed broken images in ticket view. Configured helmet in backend `server.ts` to allow `cross-origin` resource policy for `/uploads`.

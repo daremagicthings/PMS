@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { authApi } from '../services/api';
 
 export default function Login() {
@@ -7,7 +7,6 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
 
     // Check if already logged in
     const existingAuth = localStorage.getItem('soh_auth');
