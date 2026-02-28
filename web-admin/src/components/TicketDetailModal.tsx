@@ -3,7 +3,20 @@ import { X, Send, Image as ImageIcon } from 'lucide-react';
 import { commentApi, userApi } from '../services/api';
 import type { Ticket, TicketComment } from '../services/api';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5000';
+const getImageUrl = (url?: string | null) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    
+    // Get base URL from Vite env or fallback
+    let base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    // Remove '/api' from the end if it exists
+    base = base.replace(/\/api\/?$/, '');
+    
+    // Ensure url starts with a slash
+    const path = url.startsWith('/') ? url : `/${url}`;
+    
+    return `${base}${path}`;
+};
 
 interface TicketDetailModalProps {
     ticket: Ticket;
@@ -79,6 +92,9 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
         }
     };
 
+    console.log('API_BASE is:', API_BASE);
+    console.log('ticket.imageUrl is:', ticket.imageUrl);
+
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
             <div
@@ -121,7 +137,7 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                                 <ImageIcon size={14} /> Хавсаргасан зураг
                             </h3>
                             <img
-                                src={ticket.imageUrl.startsWith('http') ? ticket.imageUrl : `${API_BASE}${ticket.imageUrl}`}
+                                src={getImageUrl(ticket.imageUrl)}
                                 alt="Хавсаргасан зураг"
                                 className="max-w-full max-h-64 rounded-xl border border-slate-200 object-cover cursor-pointer hover:opacity-90 transition-opacity"
                                 onClick={() => setShowLightbox(true)}
@@ -200,7 +216,7 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                     onClick={() => setShowLightbox(false)}
                 >
                     <img
-                        src={ticket.imageUrl.startsWith('http') ? ticket.imageUrl : `${API_BASE}${ticket.imageUrl}`}
+                        src={getImageUrl(ticket.imageUrl)}
                         alt="Бүтэн зураг"
                         className="max-w-full max-h-full rounded-xl object-contain"
                         onClick={(e) => e.stopPropagation()}
