@@ -55,7 +55,7 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
             await fetchComments();
         } catch (err) {
             console.error('Failed to send comment:', err);
-            alert('Failed to send comment.');
+            alert('Коммент илгээхэд алдаа гарлаа.');
         } finally {
             setSending(false);
         }
@@ -67,6 +67,15 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
             case 'IN_PROGRESS': return 'bg-amber-100 text-amber-700';
             case 'RESOLVED': return 'bg-emerald-100 text-emerald-700';
             default: return 'bg-slate-100 text-slate-700';
+        }
+    };
+
+    const statusLabel = (status: string) => {
+        switch (status) {
+            case 'NEW': return 'Шинэ';
+            case 'IN_PROGRESS': return 'Хийгдэж буй';
+            case 'RESOLVED': return 'Шийдэгдсэн';
+            default: return status;
         }
     };
 
@@ -82,10 +91,10 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                         <h2 className="text-lg font-bold text-slate-800 truncate">{ticket.title}</h2>
                         <div className="flex items-center gap-3 mt-1">
                             <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${statusColor(ticket.status)}`}>
-                                {ticket.status.replace('_', ' ')}
+                                {statusLabel(ticket.status)}
                             </span>
                             <span className="text-xs text-slate-400">
-                                {ticket.user?.name || 'Unknown'} · {ticket.apartment ? `${ticket.apartment.buildingName} — ${ticket.apartment.unitNumber}` : '—'}
+                                {ticket.user?.name || 'Тодорхойгүй'} · {ticket.apartment ? `${ticket.apartment.buildingName} — ${ticket.apartment.unitNumber}` : '—'}
                             </span>
                         </div>
                     </div>
@@ -101,7 +110,7 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                 <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
                     {/* Description */}
                     <div>
-                        <h3 className="text-sm font-semibold text-slate-500 mb-1">Description</h3>
+                        <h3 className="text-sm font-semibold text-slate-500 mb-1">Тайлбар</h3>
                         <p className="text-sm text-slate-700 leading-relaxed">{ticket.description}</p>
                     </div>
 
@@ -109,14 +118,14 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                     {ticket.imageUrl && (
                         <div>
                             <h3 className="text-sm font-semibold text-slate-500 mb-2 flex items-center gap-1.5">
-                                <ImageIcon size={14} /> Attached Image
+                                <ImageIcon size={14} /> Хавсаргасан зураг
                             </h3>
                             <img
-                                src={`${API_BASE}${ticket.imageUrl}`}
-                                alt="Ticket attachment"
+                                src={ticket.imageUrl.startsWith('http') ? ticket.imageUrl : `${API_BASE}${ticket.imageUrl.startsWith('/') ? '' : '/'}${ticket.imageUrl}`}
+                                alt="Хавсаргасан зураг"
                                 className="max-w-full max-h-64 rounded-xl border border-slate-200 object-cover cursor-pointer hover:opacity-90 transition-opacity"
                                 onClick={() => setShowLightbox(true)}
-                                title="Click to enlarge"
+                                title="Томсгож үзэх"
                             />
                         </div>
                     )}
@@ -124,7 +133,7 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                     {/* Comment thread */}
                     <div>
                         <h3 className="text-sm font-semibold text-slate-500 mb-3">
-                            Comments ({comments.length})
+                            Сэтгэгдэл ({comments.length})
                         </h3>
 
                         {loading ? (
@@ -132,7 +141,7 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                                 <div className="animate-spin w-6 h-6 border-3 border-blue-500 border-t-transparent rounded-full"></div>
                             </div>
                         ) : comments.length === 0 ? (
-                            <p className="text-sm text-slate-400 text-center py-6">No comments yet. Start the conversation!</p>
+                            <p className="text-sm text-slate-400 text-center py-6">Сэтгэгдэл алга. Энд бичиж харилцааг эхлүүлнэ үү!</p>
                         ) : (
                             <div className="space-y-3">
                                 {comments.map((c) => {
@@ -147,7 +156,7 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                                                 : 'bg-slate-100 text-slate-800 rounded-bl-md'
                                                 }`}>
                                                 <p className={`text-xs font-semibold mb-0.5 ${isAdmin ? 'text-blue-100' : 'text-slate-500'}`}>
-                                                    {c.user?.name || 'Unknown'}
+                                                    {c.user?.name || 'Тодорхойгүй'}
                                                 </p>
                                                 <p className="text-sm leading-relaxed">{c.content}</p>
                                                 <p className={`text-[10px] mt-1 ${isAdmin ? 'text-blue-200' : 'text-slate-400'}`}>
@@ -170,7 +179,7 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                            placeholder="Type a message..."
+                            placeholder="Зурвас бичих..."
                             className="flex-1 px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                         />
                         <button
@@ -191,8 +200,8 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                     onClick={() => setShowLightbox(false)}
                 >
                     <img
-                        src={`${API_BASE}${ticket.imageUrl}`}
-                        alt="Ticket attachment — full size"
+                        src={ticket.imageUrl.startsWith('http') ? ticket.imageUrl : `${API_BASE}${ticket.imageUrl.startsWith('/') ? '' : '/'}${ticket.imageUrl}`}
+                        alt="Бүтэн зураг"
                         className="max-w-full max-h-full rounded-xl object-contain"
                         onClick={(e) => e.stopPropagation()}
                     />
