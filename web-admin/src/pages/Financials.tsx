@@ -204,7 +204,7 @@ export default function Financials() {
                                 {/* Left: Image if exists */}
                                 {report.imageUrl && (
                                     <img
-                                        src={report.imageUrl.startsWith('http') ? report.imageUrl : `${API_ROOT}${report.imageUrl.startsWith('/') ? '' : '/'}${report.imageUrl}`}
+                                        src={`${API_ROOT}${report.imageUrl}`}
                                         alt="receipt"
                                         className="w-20 h-20 rounded-lg object-cover border border-slate-200 flex-shrink-0"
                                     />

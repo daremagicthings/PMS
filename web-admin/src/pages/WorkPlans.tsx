@@ -214,7 +214,7 @@ export default function WorkPlans() {
                                         <td className="px-5 py-3">
                                             {plan.imageUrl ? (
                                                 <img
-                                                    src={plan.imageUrl.startsWith('http') ? plan.imageUrl : `${API_ROOT}${plan.imageUrl.startsWith('/') ? '' : '/'}${plan.imageUrl}`}
+                                                    src={`${API_ROOT}${plan.imageUrl}`}
                                                     alt="plan"
                                                     className="w-12 h-12 rounded-lg object-cover border border-slate-200"
                                                 />

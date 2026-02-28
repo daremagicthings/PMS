@@ -121,7 +121,7 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                                 <ImageIcon size={14} /> Хавсаргасан зураг
                             </h3>
                             <img
-                                src={ticket.imageUrl.startsWith('http') ? ticket.imageUrl : `${API_BASE}${ticket.imageUrl.startsWith('/') ? '' : '/'}${ticket.imageUrl}`}
+                                src={`${API_BASE}${ticket.imageUrl}`}
                                 alt="Хавсаргасан зураг"
                                 className="max-w-full max-h-64 rounded-xl border border-slate-200 object-cover cursor-pointer hover:opacity-90 transition-opacity"
                                 onClick={() => setShowLightbox(true)}
@@ -200,7 +200,7 @@ export default function TicketDetailModal({ ticket, onClose }: TicketDetailModal
                     onClick={() => setShowLightbox(false)}
                 >
                     <img
-                        src={ticket.imageUrl.startsWith('http') ? ticket.imageUrl : `${API_BASE}${ticket.imageUrl.startsWith('/') ? '' : '/'}${ticket.imageUrl}`}
+                        src={`${API_BASE}${ticket.imageUrl}`}
                         alt="Бүтэн зураг"
                         className="max-w-full max-h-full rounded-xl object-contain"
                         onClick={(e) => e.stopPropagation()}
