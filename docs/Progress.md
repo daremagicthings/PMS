@@ -837,7 +837,7 @@
 - **GitHub Actions:** Created .github/workflows/main.yml to automatically checkout the code, install dependencies, type-check the backend (	sc --noEmit), and type-check the web-admin. Runs on push and pull_request to the main branch.
 
 
-## Phase 18: Deployment & DevOps — ✅ COMPLETED
+### Phase 18: Deployment & DevOps — ✅ COMPLETED
 **Date:** 2026-02-27
 
 ### Task 18.1 — Backend Dockerfile
@@ -851,4 +851,17 @@
 
 ### Task 18.4 — Mobile App EAS
 - **Mobile App:** Created `eas.json` configuring standard Expo Application Services (EAS) build profiles for `development`, `preview`, and `production`. `production` is set to generate an `.aab` file for Android and an App Store compatible build for iOS.
-`n### Bugfix`n- **Web Admin:** Fixed broken images in ticket view. Configured helmet in backend `server.ts` to allow `cross-origin` resource policy for `/uploads`.
+
+
+## Phase 19: Branding & Polish — ✅ COMPLETED
+**Date:** 2026-02-28
+
+### Task 19.1 — Global Logo Update
+- **Assets:** Replaced all system logos with the new official branding (`icon.png`).
+- **Web Admin:** Updated public icons and sidebar assets.
+- **Mobile App:** Replaced app icon, splash screen, and favicon assets.
+
+### Bugfixes
+- **Backend:** Fixed broken images in Web Admin by configuring `helmet` to allow `cross-origin` resource policy for `/uploads`.
+- **Mobile App:** Fixed announcement navigation. Tapping an announcement notification now correctly jumps to the "Мэдээ" tab and targets the "Зарлал" sub-tab using nested navigation.
+- **Mobile App:** Installed missing `react-dom` and `react-native-web` dependencies to enable local web-based debugging and previewing.

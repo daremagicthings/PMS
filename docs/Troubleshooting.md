@@ -33,3 +33,20 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 ```
+
+### Mobile Web Support Missing Dependencies
+**Issue:** Running `npx expo start --web` fails with missing `react-dom` and `react-native-web` errors.
+**Solution:** Install the required web peer dependencies for Expo:
+```bash
+npx expo install react-dom react-native-web
+```
+
+### Mobile Notification Navigation (Nested Tabs)
+**Issue:** Tapping a notification for a screen inside a nested navigator (like Top Tabs inside a Bottom Tab) fails to redirect to the correct sub-screen.
+**Solution:** Use nested navigation syntax in the `navigation.navigate` call:
+```typescript
+navigation.navigate('Main', {
+    screen: 'TabName',
+    params: { screen: 'SubTabName' },
+});
+```
