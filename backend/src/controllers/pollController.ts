@@ -78,6 +78,32 @@ export const castVoteController = async (
 
         const vote = await castVote(userId, pollId, optionId);
 
+        // Auto-notify admins when a resident votes
+        try {
+            const { createNotification } = await import('../services/notificationService');
+            import('../lib/prisma').then(({ default: prisma }) => {
+                prisma.poll.findUnique({ where: { id: pollId }, include: { options: true } }).then(poll => {
+                    if (!poll) return;
+                    prisma.user.findUnique({ where: { id: userId } }).then(voter => {
+                        const voterName = voter?.name || 'Оршин суугч';
+                        const optionText = poll.options.find(o => o.id === optionId)?.text || 'сонголт';
+                        prisma.user.findMany({ where: { role: { in: ['ADMIN', 'SUPER_ADMIN'] } } }).then(admins => {
+                            admins.forEach(admin => {
+                                createNotification({
+                                    userId: admin.id,
+                                    title: 'Санал өгөгдлөө',
+                                    message: `${voterName} "${poll.title}" санал асуулгад "${optionText}" гэж саналаа өглөө.`,
+                                    type: 'SYSTEM',
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        } catch (notifErr) {
+            console.error('Failed to create poll vote notification:', notifErr);
+        }
+
         res.status(201).json({
             success: true,
             message: 'Vote cast successfully',

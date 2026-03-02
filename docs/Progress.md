@@ -865,3 +865,12 @@
 - **Backend:** Fixed broken images in Web Admin by configuring `helmet` to allow `cross-origin` resource policy for `/uploads`.
 - **Mobile App:** Fixed announcement navigation. Tapping an announcement notification now correctly jumps to the "Мэдээ" tab and targets the "Зарлал" sub-tab using nested navigation.
 - **Mobile App:** Installed missing `react-dom` and `react-native-web` dependencies to enable local web-based debugging and previewing.
+
+### Bug Fixes (Session 2026-03-02)
+
+- **Login Rate Limiter:** Increased backend authentication strictness from 5 to 100 max attempts for local development.
+- **Web Admin Authentication Verification:** Updated Web Admin `Login.tsx` to process `SUPER_ADMIN` user types directly into the dashboard, fixing a lockout loop. Modified `User` interface to match.
+- **Mobile App Connectivity:** Corrected the hardcoded `API_BASE_URL` from an old gateway to the actual local machine IP running the Docker container.
+- **Ticket Submission Block:** Submitting tickets via the Mobile App failed due to a missing `apartmentId` on newly seeded test accounts. Scripted a direct linkage to an existing unit via the database.
+- **Notification Deliverability (Web Admin):** Fixed `ticketController` and `commentController` so that `SUPER_ADMIN` accounts correctly receive real-time notifications, not just standard admins. Fixed Web Admin dashboard to target logs for the authenticated User instead of the first retrieved Admin.
+- **Notification Deliverability (Mobile):** Added notification delivery hooks to the `castVoteController` for the digital voting system. Verified Mobile App push functionality requires standard `EAS` project keys in `app.json`.

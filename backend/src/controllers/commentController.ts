@@ -77,7 +77,7 @@ export const addCommentController = async (
                 }
 
                 // Notify all admin users (except the commenter) so admins see resident comments
-                const admins = await prisma.user.findMany({ where: { role: 'ADMIN' } });
+                const admins = await prisma.user.findMany({ where: { role: { in: ['ADMIN', 'SUPER_ADMIN'] } } });
                 for (const admin of admins) {
                     if (admin.id !== input.userId) {
                         await createNotification({

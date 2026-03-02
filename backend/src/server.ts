@@ -44,6 +44,9 @@ app.use('/api', apiLimiter);
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // ─── API Routes ─────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.send('<h1>PMS Backend API is running!</h1><p>Please use the Web Admin on <a href="http://localhost:5173">http://localhost:5173</a> to view the web app.</p>');
+});
 app.use('/api', routes);
 
 // ─── Sentry Error Handler ───────────────────────────────

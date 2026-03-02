@@ -23,16 +23,16 @@ export default function Login() {
             const res = await authApi.login(phone, password);
             if (res.data.success && res.data.data) {
                 // Must be an admin to use the web admin portal
-                if (res.data.data.user.role !== 'ADMIN') {
+                if (res.data.data.user.role !== 'ADMIN' && res.data.data.user.role !== 'SUPER_ADMIN') {
                     setError('Зөвхөн СӨХ-н админ нэвтрэх эрхтэй.');
                     return;
                 }
-                
+
                 localStorage.setItem('soh_auth', JSON.stringify({
                     token: res.data.data.token,
                     user: res.data.data.user
                 }));
-                
+
                 // Force a hard reload so all components pick up the new token
                 window.location.href = '/';
             } else {
@@ -56,7 +56,7 @@ export default function Login() {
                     <h1 className="text-2xl font-bold text-white">Удирдлагын самбар</h1>
                     <p className="text-slate-400 mt-2 text-sm">СӨХ-н системд тавтай морил</p>
                 </div>
-                
+
                 <div className="p-8">
                     {error ? (
                         <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium mb-6 border border-red-100">
@@ -76,7 +76,7 @@ export default function Login() {
                                 required
                             />
                         </div>
-                        
+
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-1.5">Нууц үг</label>
                             <input

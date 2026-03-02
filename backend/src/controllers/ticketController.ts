@@ -50,7 +50,7 @@ export const createTicketController = async (
         try {
             const creator = await prisma.user.findUnique({ where: { id: userId } });
             const creatorName = creator?.name || 'Оршин суугч';
-            const admins = await prisma.user.findMany({ where: { role: 'ADMIN' } });
+            const admins = await prisma.user.findMany({ where: { role: { in: ['ADMIN', 'SUPER_ADMIN'] } } });
             for (const admin of admins) {
                 await createNotification({
                     userId: admin.id,

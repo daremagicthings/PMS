@@ -59,7 +59,7 @@ export interface User {
     name: string;
     phone: string | null;
     email: string | null;
-    role: 'ADMIN' | 'RESIDENT';
+    role: 'SUPER_ADMIN' | 'ADMIN' | 'RESIDENT';
     apartmentId: string | null;
     createdAt: string;
     updatedAt: string;
@@ -278,7 +278,7 @@ export const financialReportApi = {
 };
 
 export const financialTransactionApi = {
-    getByReport: (reportId: string) => 
+    getByReport: (reportId: string) =>
         api.get<ApiResponse<FinancialTransaction[]>>(`/financial-transactions/report/${reportId}`),
     create: (data: Omit<FinancialTransaction, 'id' | 'createdAt' | 'updatedAt'>) =>
         api.post<ApiResponse<FinancialTransaction>>('/financial-transactions', data),

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Check, CheckCheck } from 'lucide-react';
-import { notificationApi, userApi } from '../services/api';
+import { notificationApi } from '../services/api';
 import type { AppNotification } from '../services/api';
 
 const timeAgo = (dateStr: string, nowTime: number) => {
@@ -27,13 +27,19 @@ export default function NotificationDropdown() {
         if (open) setNow(Date.now());
     }, [open]);
 
-    // Fetch admin user ID
+    // Fetch admin user ID from auth context
     useEffect(() => {
-        userApi.getAll().then((res) => {
-            const users = res.data.data || [];
-            const admin = users.find((u) => u.role === 'ADMIN') || users[0];
-            if (admin) setAdminId(admin.id);
-        }).catch(console.error);
+        try {
+            const authStr = localStorage.getItem('soh_auth');
+            if (authStr) {
+                const parsed = JSON.parse(authStr);
+                if (parsed.user && parsed.user.id) {
+                    setAdminId(parsed.user.id);
+                }
+            }
+        } catch (e) {
+            console.error('Failed to get auth user:', e);
+        }
     }, []);
 
     // Fetch notifications when panel opens or adminId changes
