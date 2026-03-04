@@ -874,3 +874,7 @@
 - **Ticket Submission Block:** Submitting tickets via the Mobile App failed due to a missing `apartmentId` on newly seeded test accounts. Scripted a direct linkage to an existing unit via the database.
 - **Notification Deliverability (Web Admin):** Fixed `ticketController` and `commentController` so that `SUPER_ADMIN` accounts correctly receive real-time notifications, not just standard admins. Fixed Web Admin dashboard to target logs for the authenticated User instead of the first retrieved Admin.
 - **Notification Deliverability (Mobile):** Added notification delivery hooks to the `castVoteController` for the digital voting system. Verified Mobile App push functionality requires standard `EAS` project keys in `app.json`.
+
+### Bug Fixes (Session 2026-03-03)
+
+- **Mobile App Poll Voting State:** Fixed an issue where the `PollsScreen` in the mobile app failed to process the backend `votes` array, causing polls that the user already voted on to appear as not voted. Updated `api.ts` to type the votes and `PollsScreen.tsx` to parse `opt.votes` into `votedPolls` and `selectedOptions` state upon fetching polls.
