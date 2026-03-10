@@ -17,6 +17,8 @@ import contactRoutes from './contactRoutes';
 import bankStatementRoutes from './bankStatementRoutes';
 import financialTransactionRoutes from './financialTransactionRoutes';
 import aiRoutes from './aiRoutes';
+import ratingRoutes from './ratingRoutes';
+import searchRoutes from './searchRoutes';
 
 /**
  * Central route aggregator.
@@ -70,6 +72,12 @@ router.use('/bank-statements', bankStatementRoutes);
 
 // ─── AI Chatbot ─────────────────────────────────────────
 router.use('/ai', aiRoutes);
+
+// ─── HOA Ratings ────────────────────────────────────────
+router.use('/ratings', ratingRoutes);
+
+// ─── Universal Search ───────────────────────────────────
+router.use('/search', searchRoutes);
 
 // ─── Webhooks (Public — external payment callbacks) ─────
 router.use('/webhooks/qpay', webhookRoutes);

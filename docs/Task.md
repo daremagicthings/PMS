@@ -120,3 +120,17 @@ This file tracks the step-by-step development tasks. The AI Agent must pick task
 - [ ] **Task 18.2:** Dockerize Web Admin: Create a multi-stage `Dockerfile` (build with Node, serve with Nginx) for the Vite React app.
 - [ ] **Task 18.3:** Production Compose: Create a `docker-compose.prod.yml` at the project root to orchestrate PostgreSQL, Backend, and Web Admin together.
 - [ ] **Task 18.4:** Mobile App EAS Setup: Create `eas.json` in `/mobile-app` to configure Android (AAB) and iOS (IPA) production builds.
+
+## Phase 19: Architecture & Security Hardening (Local)
+- [x] **Task 19.1:** Request Validation: Added Zod validation middleware for Express routes (e.g., Auth).
+- [x] **Task 19.2:** Rate Limiting: Created stricter rate limiter for external 3rd-party API calls (Qpay, Ebarimt).
+- [x] **Task 19.3:** Multitenancy Security: Implemented Prisma Client Extension with AsyncLocalStorage to enforce tenant isolation automatically.
+- [x] **Task 19.4:** Frontend State Management: Integrated `@tanstack/react-query` and refactored the Tickets page for robust server-state caching.
+
+## Phase 20: Advanced Document Management & HOA Rating
+- [x] **Task 20.1:** Extend Facility/Rent Models: Added `contractNumber`, `leaseStatus`, `contractPdfUrl` to `Apartment`, and created `ContractHistory` model.
+- [x] **Task 20.2:** Extend Document/Information Models: Upgraded `Announcement` model to act as a document system with `category` and `pdfUrl`. Updated APIs to support filtering by category.
+- [x] **Task 20.3:** HOA Performance Rating: Created `HOARating` model, `POST /api/ratings` endpoint, and added a modern 3-option rating component in the Mobile App's `HomeScreen`.
+- [x] **Task 20.4:** Excel Import/Export for Residents: Integrated `xlsx` into the web-admin `Residents.tsx` page to bulk download and upload resident info.
+- [x] **Task 20.5:** UI/UX Refinements: Enhanced `Announcements.tsx` with document categories/tabs and PDF download buttons. Added prominent filter tabs to `Tickets.tsx`. Added an "Activate Tenant" toggle in the Mobile App's `AccountScreen` for property owners.
+- [x] **Task 20.6:** Universal Search: Created a global `/api/search` endpoint that queries across Users, Apartments, Vehicles, and Tickets. Implemented a `GlobalSearch` component in the Web Admin header for instant, unified cross-entity search.

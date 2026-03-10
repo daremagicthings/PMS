@@ -14,8 +14,8 @@ datasource db {
 
 enum Role {
   SUPER_ADMIN // System owner (you)
-  ADMIN       // Organization manager
-  RESIDENT    // Apartment resident
+  ADMIN // Organization manager
+  RESIDENT // Apartment resident
 }
 
 enum InvoiceStatus {
@@ -43,24 +43,49 @@ enum PollStatus {
   CLOSED
 }
 
+enum LeaseStatus {
+  ACTIVE
+  CANCELED
+  AUTO_RENEW
+}
+
+enum DocumentCategory {
+  INCOMING
+  OUTGOING
+  LAW
+  RESOLUTION
+  RULE
+  CONTRACT
+  OTHER
+  ANNOUNCEMENT
+}
+
+enum RatingValue {
+  GOOD
+  AVERAGE
+  BAD
+}
+
 // ─── MODELS ─────────────────────────────────────────────
 
 /// Represents a distinct Property Management Company / СӨХ Entity (Multi-Tenant).
 model Organization {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   contactInfo String?
-  isActive    Boolean  @default(true)
+  isActive    Boolean @default(true)
 
-  users            User[]
-  apartments       Apartment[]
-  announcements    Announcement[]
-  workPlans        WorkPlan[]
-  financialReports FinancialReport[]
-  polls            Poll[]
-  staticContents   StaticContent[]
-  contacts         Contact[]
-  faqs             Faq[]
+  users             User[]
+  apartments        Apartment[]
+  announcements     Announcement[]
+  workPlans         WorkPlan[]
+  financialReports  FinancialReport[]
+  polls             Poll[]
+  staticContents    StaticContent[]
+  contacts          Contact[]
+  faqs              Faq[]
+  contractHistories ContractHistory[]
+  hoaRatings        HOARating[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -70,18 +95,18 @@ model Organization {
 
 /// Represents an Admin or Resident user in the system.
 model User {
-  id           String   @id @default(uuid())
-  email        String?  @unique
-  phone        String?  @unique
-  name         String
-  role         Role     @default(RESIDENT)
-  passwordHash    String
-  expoPushToken   String?
+  id            String  @id @default(uuid())
+  email         String? @unique
+  phone         String? @unique
+  name          String
+  role          Role    @default(RESIDENT)
+  passwordHash  String
+  expoPushToken String?
 
   /// E-Barimt Receipt Type: CITIZEN or ENTITY
-  ebarimtType     String   @default("CITIZEN")
+  ebarimtType  String  @default("CITIZEN")
   /// E-Barimt Registry Number (Company TTDD or Person ID)
-  ebarimtRegNo    String?
+  ebarimtRegNo String?
 
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -94,6 +119,7 @@ model User {
   ticketComments TicketComment[]
   notifications  Notification[]
   pollVotes      PollVote[]
+  hoaRatings     HOARating[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -110,7 +136,7 @@ model Apartment {
   unitNumber   String
 
   /// Category: "APARTMENT" | "MUSAR" | "BASEMENT" | "PARKING" | "STORAGE"
-  unitType       String    @default("APARTMENT")
+  unitType       String      @default("APARTMENT")
   /// Owner of the unit (nullable — may not have a registered owner)
   ownerId        String?
   /// Tenant currently leasing the unit (nullable)
@@ -121,6 +147,12 @@ model Apartment {
   leaseEndDate   DateTime?
   /// External contract reference ID
   contractId     String?
+  /// Internal Contract Number
+  contractNumber String?
+  /// Status of the Lease
+  leaseStatus    LeaseStatus @default(ACTIVE)
+  /// PDF of the Contract
+  contractPdfUrl String?
 
   /// Parent linked Apartment (Used for nested Parking/Storage assignments)
   parentApartmentId String?
@@ -130,10 +162,12 @@ model Apartment {
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  residents User[]
-  invoices  Invoice[]
-  tickets   Ticket[]
-  vehicles  Vehicle[]
+  residents         User[]
+  invoices          Invoice[]
+  tickets           Ticket[]
+  vehicles          Vehicle[]
+  contractHistories ContractHistory[]
+  hoaRatings        HOARating[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -143,20 +177,61 @@ model Apartment {
   @@map("apartments")
 }
 
+/// Represents the history of rent/facility contracts
+model ContractHistory {
+  id             String      @id @default(uuid())
+  contractNumber String?
+  startDate      DateTime
+  endDate        DateTime
+  status         LeaseStatus
+  pdfUrl         String?
+
+  apartmentId String
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contract_history")
+}
+
+/// Represents HOA Performance Ratings
+model HOARating {
+  id     String      @id @default(uuid())
+  rating RatingValue
+
+  apartmentId String
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("hoa_ratings")
+}
+
 /// Represents a monthly fee invoice linked to an apartment.
 model Invoice {
-  id             String        @id @default(uuid())
-  amount         Float
-  penaltyAmount  Float         @default(0)
-  description    String?
-  status         InvoiceStatus @default(PENDING)
-  dueDate        DateTime
-  paidAt         DateTime?
-  qpayUrl        String?
-  qpayInvoiceId  String?
-  ebarimtId      String?
-  lotteryNumber  String?
-  ebarimtQrCode  String?
+  id            String        @id @default(uuid())
+  amount        Float
+  penaltyAmount Float         @default(0)
+  description   String?
+  status        InvoiceStatus @default(PENDING)
+  dueDate       DateTime
+  paidAt        DateTime?
+  qpayUrl       String?
+  qpayInvoiceId String?
+  ebarimtId     String?
+  lotteryNumber String?
+  ebarimtQrCode String?
 
   apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Restrict)
   apartmentId String
@@ -174,11 +249,11 @@ model Invoice {
 
 /// Represents an external bank statement record used for invoice reconciliation.
 model BankStatement {
-  id              String   @id @default(uuid())
-  date            DateTime
-  amount          Float
-  description     String
-  status          String   @default("PENDING") // PENDING, MATCHED
+  id          String   @id @default(uuid())
+  date        DateTime
+  amount      Float
+  description String
+  status      String   @default("PENDING") // PENDING, MATCHED
 
   matchedInvoiceId String?
   matchedInvoice   Invoice? @relation(fields: [matchedInvoiceId], references: [id], onDelete: SetNull)
@@ -215,10 +290,12 @@ model Ticket {
 
 /// Represents an announcement or meeting notice created by an Admin.
 model Announcement {
-  id          String  @id @default(uuid())
+  id          String           @id @default(uuid())
   title       String
   content     String
   meetingLink String?
+  category    DocumentCategory @default(ANNOUNCEMENT)
+  pdfUrl      String?
 
   createdById String
   createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
@@ -284,7 +361,7 @@ model WorkPlan {
   imageUrl     String?
 
   /// Category: "REGULAR" | "SCHEDULED" | "AD_HOC"
-  category     String         @default("REGULAR")
+  category String @default("REGULAR")
 
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -297,8 +374,8 @@ model WorkPlan {
 
 /// Represents a vehicle registered to an apartment.
 model Vehicle {
-  id           String    @id @default(uuid())
-  licensePlate String    @unique
+  id           String @id @default(uuid())
+  licensePlate String @unique
   makeModel    String
 
   apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
@@ -341,11 +418,11 @@ model FinancialTransaction {
   description    String
   type           String   @default("INCOME") // INCOME, EXPENSE
 
-  reportId       String
-  report         FinancialReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  reportId String
+  report   FinancialReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([date])
   @@map("financial_transactions")
@@ -409,7 +486,7 @@ model PollVote {
 model StaticContent {
   id      String @id @default(uuid())
   /// Type of content, e.g., "RULES", "INQUIRIES"
-  type    String 
+  type    String
   title   String
   content String
 
@@ -425,7 +502,7 @@ model StaticContent {
 
 /// Represents a directory of important contacts (Plumber, Electrician, etc.)
 model Contact {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   phone       String
   role        String
@@ -434,8 +511,8 @@ model Contact {
   organizationId String?
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([organizationId])
   @@map("contacts")

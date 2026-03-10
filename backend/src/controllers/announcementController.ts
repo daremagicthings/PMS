@@ -65,17 +65,20 @@ export const createAnnouncementController = async (
     }
 };
 
+import { DocumentCategory } from '@prisma/client';
+
 /**
  * Controller for GET /api/announcements
  * Lists all announcements with creator info.
  */
 export const getAllAnnouncementsController = async (
-    _req: Request,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {
-        const announcements = await getAllAnnouncements();
+        const category = req.query.category as DocumentCategory | undefined;
+        const announcements = await getAllAnnouncements(category);
 
         res.status(200).json({
             success: true,

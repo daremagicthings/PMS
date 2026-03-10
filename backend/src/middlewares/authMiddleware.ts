@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { Role } from '@prisma/client';
+import { tenantContext } from '../lib/tenantContext';
 
 /** JWT secret — must match authService.ts */
 const JWT_SECRET = process.env.JWT_SECRET || 'soh-dev-secret-key';
@@ -61,7 +62,14 @@ export const authMiddleware = async (
             organizationId: decoded.organizationId,
         };
 
-        next();
+        // Wrap the rest of the request in the tenant context
+        tenantContext.run({
+            userId: decoded.userId,
+            role: decoded.role,
+            organizationId: decoded.organizationId || null,
+        }, () => {
+            next();
+        });
     } catch (error) {
         const err = error instanceof Error ? error : new Error('Unknown error');
 

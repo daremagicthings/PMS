@@ -109,6 +109,8 @@ export interface Announcement {
     title: string;
     content: string;
     meetingLink: string | null;
+    category?: string;
+    pdfUrl?: string | null;
     createdById: string;
     createdBy?: Pick<User, 'id' | 'name'>;
     createdAt: string;
@@ -432,6 +434,23 @@ export const contactApi = {
     update: (id: string, data: { name?: string; phone?: string; role?: string; description?: string }) =>
         api.put<ApiResponse<Contact>>(`/contacts/${id}`, data),
     delete: (id: string) => api.delete<ApiResponse<void>>(`/contacts/${id}`),
+};
+
+// ─── Search ─────────────────────────────────────────────
+
+export interface SearchResults {
+    users: { id: string; name: string; phone: string; role: string }[];
+    apartments: { id: string; buildingName: string; unitNumber: string; unitType: string }[];
+    vehicles: { id: string; licensePlate: string; makeModel: string; apartment: { buildingName: string; unitNumber: string } }[];
+    tickets: { id: string; title: string; status: string }[];
+    polls: { id: string; title: string; status: string }[];
+    announcements: { id: string; title: string; category: string }[];
+    faqs: { id: string; question: string }[];
+    staticContents: { id: string; title: string; type: string }[];
+}
+
+export const searchApi = {
+    globalSearch: (query: string) => api.get<ApiResponse<SearchResults>>(`/search?q=${encodeURIComponent(query)}`),
 };
 
 export default api;

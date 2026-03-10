@@ -1,11 +1,13 @@
 import prisma from '../lib/prisma';
-import { Announcement } from '@prisma/client';
+import { Announcement, DocumentCategory } from '@prisma/client';
 
 /** Shape of the create announcement request body */
 export interface CreateAnnouncementInput {
     title: string;
     content: string;
     meetingLink?: string;
+    category?: DocumentCategory;
+    pdfUrl?: string;
     createdById: string;
 }
 
@@ -18,7 +20,7 @@ export interface CreateAnnouncementInput {
  */
 export const createAnnouncement = async (input: CreateAnnouncementInput): Promise<Announcement> => {
     // Verify creator exists
-    const user = await prisma.user.findUnique({ where: { id: input.createdById } });
+    const user = await prisma.user.findFirst({ where: { id: input.createdById } });
     if (!user) {
         throw new Error(`User with ID ${input.createdById} not found`);
     }
@@ -28,6 +30,8 @@ export const createAnnouncement = async (input: CreateAnnouncementInput): Promis
             title: input.title,
             content: input.content,
             meetingLink: input.meetingLink || null,
+            category: input.category || 'ANNOUNCEMENT',
+            pdfUrl: input.pdfUrl || null,
             createdById: input.createdById,
         },
     });
@@ -40,8 +44,9 @@ export const createAnnouncement = async (input: CreateAnnouncementInput): Promis
  *
  * @returns Array of announcements with creator name
  */
-export const getAllAnnouncements = async (): Promise<Announcement[]> => {
+export const getAllAnnouncements = async (category?: DocumentCategory): Promise<Announcement[]> => {
     const announcements = await prisma.announcement.findMany({
+        where: category ? { category } : undefined,
         include: {
             createdBy: {
                 select: { id: true, name: true },
@@ -58,6 +63,8 @@ export interface UpdateAnnouncementInput {
     title?: string;
     content?: string;
     meetingLink?: string | null;
+    category?: DocumentCategory;
+    pdfUrl?: string | null;
 }
 
 /**
@@ -67,7 +74,7 @@ export const updateAnnouncement = async (
     id: string,
     input: UpdateAnnouncementInput
 ): Promise<Announcement> => {
-    const existing = await prisma.announcement.findUnique({ where: { id } });
+    const existing = await prisma.announcement.findFirst({ where: { id } });
     if (!existing) throw new Error(`Announcement with ID ${id} not found`);
 
     const updated = await prisma.announcement.update({
@@ -76,6 +83,8 @@ export const updateAnnouncement = async (
             ...(input.title !== undefined && { title: input.title }),
             ...(input.content !== undefined && { content: input.content }),
             ...(input.meetingLink !== undefined && { meetingLink: input.meetingLink }),
+            ...(input.category !== undefined && { category: input.category }),
+            ...(input.pdfUrl !== undefined && { pdfUrl: input.pdfUrl }),
         },
         include: { createdBy: { select: { id: true, name: true } } },
     });
@@ -87,7 +96,7 @@ export const updateAnnouncement = async (
  * Deletes an announcement by ID.
  */
 export const deleteAnnouncement = async (id: string): Promise<Announcement> => {
-    const existing = await prisma.announcement.findUnique({ where: { id } });
+    const existing = await prisma.announcement.findFirst({ where: { id } });
     if (!existing) throw new Error(`Announcement with ID ${id} not found`);
 
     return prisma.announcement.delete({ where: { id } });

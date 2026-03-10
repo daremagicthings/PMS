@@ -9,6 +9,7 @@ import {
 } from '../controllers/invoiceController';
 import { createQpayInvoiceController } from '../controllers/qpayController';
 import { uploadSingle } from '../middlewares/uploadMiddleware';
+import { externalApiLimiter } from '../middlewares/rateLimiters';
 
 const router = Router();
 
@@ -28,16 +29,17 @@ router.post('/calculate-penalties', calculatePenaltiesController);
 router.put('/:id/pay', markInvoiceAsPaidController);
 
 /** POST /api/invoices/:id/qpay — Generate QPay invoice with QR + deep links */
-router.post('/:id/qpay', createQpayInvoiceController);
+router.post('/:id/qpay', externalApiLimiter, createQpayInvoiceController);
 
 /** POST /api/invoices/qpay-bulk — Generate QPay bulk invoice */
-router.post('/qpay-bulk', async (req, res, next) => {
+router.post('/qpay-bulk', externalApiLimiter, async (req, res, next) => {
     const { createBulkQpayInvoiceController } = await import('../controllers/qpayController');
     createBulkQpayInvoiceController(req, res, next);
 });
 
 /** GET /api/invoices/:id/ebarimt — Get or generate E-Barimt receipt */
-router.get('/:id/ebarimt', getEbarimtController);
+router.get('/:id/ebarimt', externalApiLimiter, getEbarimtController);
 
 export default router;
+
 

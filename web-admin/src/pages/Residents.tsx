@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
-    Building2, Plus, Pencil, Home, Key, Calendar, FileText, User as UserIcon
+    Building2, Plus, Pencil, Home, Key, Calendar, FileText, User as UserIcon, Download, Upload
 } from 'lucide-react';
 import type { Apartment, User, ApiResponse } from '../services/api';
 import { apartmentApi, userApi } from '../services/api';
+import * as XLSX from 'xlsx';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 type TabKey = 'apartments' | 'leased';
 
@@ -26,6 +28,8 @@ const emptyForm = {
 };
 
 export default function Residents() {
+    const location = useLocation();
+    const navigate = useNavigate();
     const [apartments, setApartments] = useState<Apartment[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
@@ -35,6 +39,7 @@ export default function Residents() {
     const [form, setForm] = useState(emptyForm);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // ─── Fetch data ────────────────────────────────────────
     const fetchData = async () => {
@@ -54,6 +59,18 @@ export default function Residents() {
     };
 
     useEffect(() => { fetchData(); }, []);
+
+    // Handle incoming search highlight
+    useEffect(() => {
+        if (!loading && location.state?.highlightApartmentId && apartments.length > 0) {
+            const apt = apartments.find(a => a.id === location.state.highlightApartmentId);
+            if (apt) {
+                if (apt.unitType !== 'APARTMENT') setActiveTab('leased');
+                openEditModal(apt);
+                navigate('.', { replace: true, state: {} });
+            }
+        }
+    }, [location.state, apartments, loading, navigate]);
 
     // ─── Filtered views ────────────────────────────────────
     const apartmentUnits = apartments.filter(a => a.unitType === 'APARTMENT');
@@ -128,6 +145,62 @@ export default function Residents() {
         }
     };
 
+    // ─── Excel Import/Export ───────────────────────────────
+    const handleExport = () => {
+        const wsData = users.map(u => ({
+            Name: u.name,
+            Phone: u.phone,
+            Email: u.email || '',
+            Role: u.role,
+        }));
+        const ws = XLSX.utils.json_to_sheet(wsData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Residents');
+        XLSX.writeFile(wb, 'Residents.xlsx');
+    };
+
+    const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (evt) => {
+            try {
+                setLoading(true);
+                const bstr = evt.target?.result;
+                const wb = XLSX.read(bstr, { type: 'binary' });
+                const wsname = wb.SheetNames[0];
+                const ws = wb.Sheets[wsname];
+                const data = XLSX.utils.sheet_to_json<any>(ws);
+
+                for (const row of data) {
+                    if (row.Name && row.Phone) {
+                        try {
+                            await userApi.create({
+                                name: row.Name,
+                                phone: String(row.Phone),
+                                password: 'password123', // default password
+                                email: row.Email || undefined,
+                                role: row.Role || 'RESIDENT',
+                            });
+                        } catch (err) {
+                            console.error(`Failed to import user ${row.Name}:`, err);
+                        }
+                    }
+                }
+                alert('Импорт амжилттай дууслаа');
+                fetchData();
+            } catch (err) {
+                console.error(err);
+                alert('Импорт хийх үед алдаа гарлаа');
+            } finally {
+                setLoading(false);
+                if (fileInputRef.current) fileInputRef.current.value = '';
+            }
+        };
+        reader.readAsBinaryString(file);
+    };
+
     // ─── User name resolver ────────────────────────────────
     const getUserName = (id: string | null): string => {
         if (!id) return '—';
@@ -148,13 +221,36 @@ export default function Residents() {
                     <Building2 className="text-blue-600" size={28} />
                     <h1 className="text-2xl font-bold text-slate-900">Оршин суугчид</h1>
                 </div>
-                <button
-                    onClick={openCreateModal}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors cursor-pointer"
-                >
-                    <Plus size={18} />
-                    {isLeaseTab ? 'Түрээс нэмэх' : 'Орон сууц нэмэх'}
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleExport}
+                        className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors cursor-pointer"
+                    >
+                        <Download size={18} />
+                        Excel-р татах
+                    </button>
+                    <input
+                        type="file"
+                        accept=".xlsx, .xls, .csv"
+                        className="hidden"
+                        ref={fileInputRef}
+                        onChange={handleImport}
+                    />
+                    <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors cursor-pointer"
+                    >
+                        <Upload size={18} />
+                        Excel-с оруулах
+                    </button>
+                    <button
+                        onClick={openCreateModal}
+                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors cursor-pointer"
+                    >
+                        <Plus size={18} />
+                        {isLeaseTab ? 'Түрээс нэмэх' : 'Орон сууц нэмэх'}
+                    </button>
+                </div>
             </div>
 
             {/* Tabs */}
