@@ -106,7 +106,7 @@ export default function Polls() {
                 </div>
                 <button
                     onClick={() => setShowForm(!showForm)}
-                    className="px-5 py-2.5 bg-linear-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-indigo-500/25"
+                    className="px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-indigo-500/25"
                 >
                     {showForm ? '✕ Цуцлах' : '+ Шинэ асуулга'}
                 </button>
@@ -156,7 +156,7 @@ export default function Polls() {
                         <div className="space-y-2">
                             {options.map((opt, i) => (
                                 <div key={i} className="flex items-center gap-2">
-                                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white bg-linear-to-br from-indigo-500 to-purple-500 shrink-0">
+                                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white bg-gradient-to-br from-indigo-500 to-purple-500 shrink-0">
                                         {i + 1}
                                     </div>
                                     <input
@@ -187,7 +187,7 @@ export default function Polls() {
                     <button
                         onClick={handleCreate}
                         disabled={submitting}
-                        className="px-6 py-3 bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:opacity-50 text-white rounded-xl font-semibold text-sm transition-all shadow-sm"
+                        className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 disabled:opacity-50 text-white rounded-xl font-semibold text-sm transition-all shadow-sm"
                     >
                         {submitting ? 'Үүсгэж байна...' : '✓ Санал асуулга үүсгэх'}
                     </button>
@@ -377,7 +377,7 @@ export default function Polls() {
                                                                 <tr key={`${opt.id}-${vi}`} className="hover:bg-slate-50">
                                                                     <td className="py-2 px-2 text-slate-800 font-medium">
                                                                         <span className="flex items-center gap-2">
-                                                                            <span className="w-6 h-6 rounded-full bg-linear-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] text-white font-bold shadow-sm">
+                                                                            <span className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] text-white font-bold shadow-sm">
                                                                                 {(v.user?.name || '?')[0]}
                                                                             </span>
                                                                             {v.user?.name || 'Unknown'}

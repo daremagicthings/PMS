@@ -134,3 +134,10 @@ This file tracks the step-by-step development tasks. The AI Agent must pick task
 - [x] **Task 20.4:** Excel Import/Export for Residents: Integrated `xlsx` into the web-admin `Residents.tsx` page to bulk download and upload resident info.
 - [x] **Task 20.5:** UI/UX Refinements: Enhanced `Announcements.tsx` with document categories/tabs and PDF download buttons. Added prominent filter tabs to `Tickets.tsx`. Added an "Activate Tenant" toggle in the Mobile App's `AccountScreen` for property owners.
 - [x] **Task 20.6:** Universal Search: Created a global `/api/search` endpoint that queries across Users, Apartments, Vehicles, and Tickets. Implemented a `GlobalSearch` component in the Web Admin header for instant, unified cross-entity search.
+
+## Phase 21: Performance Optimization & UI Standardization
+- [x] **Task 21.1:** Web Admin Rendering Optimization: Memoized expensive array filters, math calculations, and lookups using `useMemo` and `useCallback` in `Residents.tsx` and `Tickets.tsx` to prevent lag during re-renders.
+- [x] **Task 21.2:** Mobile App Rendering Optimization: Applied `useMemo` to heavy invoice calculations in `HomeScreen.tsx` to resolve screen freezing during interaction.
+- [x] **Task 21.3:** Universal Search Bug Fixes: Expanded global search to query 8 tables (including Polls, FAQs, and Documents). Fixed a critical interaction bug where the dropdown closed before routing occurred.
+- [x] **Task 21.4:** UI Standardization: Fixed Tailwind gradient classes in `Polls.tsx`. Corrected contrast and text-visibility issues in `Reconciliation.tsx` and `Dashboard.tsx` pie charts. Handled safe area insets for the Mobile App bottom tab navigator.
+- [x] **Task 21.5:** Docker Environment Fixes: Re-linked disjointed containers into a unified Docker Compose network, fixed the database URL connection string, and resolved macOS port 5000 conflicts.

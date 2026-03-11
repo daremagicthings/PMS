@@ -104,7 +104,7 @@ export default function Reconciliation() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-slate-100">Хуулга тулгах (Reconciliation)</h1>
+                <h1 className="text-2xl font-bold text-slate-900">Хуулга тулгах (Reconciliation)</h1>
                 <div className="flex space-x-3">
                     <label className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg cursor-pointer transition-colors border border-slate-700">
                         <Upload size={18} />

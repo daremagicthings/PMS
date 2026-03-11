@@ -49,6 +49,10 @@ export default function GlobalSearch() {
         setIsOpen(false);
         setQuery('');
         setResults(null);
+        // Remove focus from the input so next click triggers onFocus
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
     };
 
     return (
@@ -58,7 +62,10 @@ export default function GlobalSearch() {
                 <input
                     type="text"
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e) => {
+                        setQuery(e.target.value);
+                        setIsOpen(true);
+                    }}
                     placeholder="Хайх (Хэрэглэгч, байр...)"
                     className="bg-transparent border-none outline-none text-sm w-full text-slate-700 placeholder-slate-400"
                     onFocus={() => setIsOpen(true)}

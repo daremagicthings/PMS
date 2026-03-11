@@ -221,13 +221,26 @@ export default function Dashboard() {
                                     cx="50%"
                                     cy="50%"
                                     innerRadius={60}
-                                    outerRadius={100}
+                                    outerRadius={90}
                                     paddingAngle={4}
                                     dataKey="value"
-                                    label={({ name, percent }: { name?: string; percent?: number }) =>
-                                        `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`
-                                    }
-                                    labelLine={false}
+                                    label={(props: any) => {
+                                        const { name, percent, x, y, cx } = props;
+                                        return (
+                                            <text
+                                                x={x}
+                                                y={y}
+                                                fill="#334155"
+                                                textAnchor={x > cx ? 'start' : 'end'}
+                                                dominantBaseline="central"
+                                                fontSize={12}
+                                                fontWeight={600}
+                                            >
+                                                {`${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                                            </text>
+                                        );
+                                    }}
+                                    labelLine={{ stroke: '#94a3b8', strokeWidth: 1 }}
                                 >
                                     {ticketStatusData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.color} />

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ticketApi } from '../services/api';
 import type { Ticket } from '../services/api';
@@ -56,9 +56,21 @@ export default function Tickets() {
         }
     });
 
-    const handleStatusChange = (id: string, newStatus: string) => {
+    const handleStatusChange = useCallback((id: string, newStatus: string) => {
         updateStatusMutation.mutate({ id, status: newStatus });
-    };
+    }, [updateStatusMutation]);
+
+    const pendingCount = useMemo(() => tickets.filter((t: Ticket) => t.status === 'NEW' || t.status === 'IN_PROGRESS').length, [tickets]);
+    const resolvedCount = useMemo(() => tickets.filter((t: Ticket) => t.status === 'RESOLVED').length, [tickets]);
+
+    const filteredTickets = useMemo(() => {
+        return tickets.filter((t: Ticket) => {
+            if (filterStatus === 'ALL') return true;
+            if (filterStatus === 'PENDING') return t.status === 'NEW' || t.status === 'IN_PROGRESS';
+            if (filterStatus === 'RESOLVED') return t.status === 'RESOLVED';
+            return true;
+        });
+    }, [tickets, filterStatus]);
 
     if (isLoading) {
         return (
@@ -81,21 +93,11 @@ export default function Tickets() {
         }
     };
 
-    const pendingCount = tickets.filter((t: Ticket) => t.status === 'NEW' || t.status === 'IN_PROGRESS').length;
-    const resolvedCount = tickets.filter((t: Ticket) => t.status === 'RESOLVED').length;
-
-    const filteredTickets = tickets.filter((t: Ticket) => {
-        if (filterStatus === 'ALL') return true;
-        if (filterStatus === 'PENDING') return t.status === 'NEW' || t.status === 'IN_PROGRESS';
-        if (filterStatus === 'RESOLVED') return t.status === 'RESOLVED';
-        return true;
-    });
-
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <p className="text-sm text-slate-500">
-                    Нийт {tickets.length} · {tickets.filter((t: Ticket) => t.status === 'NEW').length} шинэ · {tickets.filter((t: Ticket) => t.status === 'IN_PROGRESS').length} хийгдэж буй
+                    Нийт {tickets.length} · {pendingCount} хүлээгдэж буй · {resolvedCount} шийдэгдсэн
                 </p>
 
                 <div className="flex bg-slate-100 p-1 rounded-xl w-fit border border-slate-200">

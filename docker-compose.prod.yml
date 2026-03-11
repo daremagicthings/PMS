@@ -5,8 +5,8 @@ services:
     image: postgres:15-alpine
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_USER: ${DB_USER:-soh_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-soh_password}
       POSTGRES_DB: ${DB_NAME:-soh_db}
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -20,8 +20,10 @@ services:
     restart: always
     env_file:
       - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql://soh_user:soh_password@db:5432/soh_db?schema=public
     ports:
-      - "5000:5000"
+      - "5050:5000"
     depends_on:
       - db
 
@@ -37,3 +39,5 @@ services:
 
 volumes:
   pgdata:
+
+

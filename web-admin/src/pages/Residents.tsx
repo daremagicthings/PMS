@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import {
     Building2, Plus, Pencil, Home, Key, Calendar, FileText, User as UserIcon, Download, Upload
 } from 'lucide-react';
@@ -42,7 +42,7 @@ export default function Residents() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // ─── Fetch data ────────────────────────────────────────
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setLoading(true);
             const [aptRes, userRes] = await Promise.all([
@@ -56,9 +56,24 @@ export default function Residents() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    useEffect(() => { fetchData(); }, []);
+    useEffect(() => { fetchData(); }, [fetchData]);
+
+    // ─── Filtered views & Memoized maps ────────────────────
+    const { apartmentUnits, leasedUnits } = useMemo(() => {
+        return {
+            apartmentUnits: apartments.filter(a => a.unitType === 'APARTMENT'),
+            leasedUnits: apartments.filter(a => a.unitType !== 'APARTMENT')
+        };
+    }, [apartments]);
+
+    // O(1) lookup dictionary to avoid nested loops during render
+    const userMap = useMemo(() => {
+        const map = new Map<string, string>();
+        users.forEach(u => map.set(u.id, u.name));
+        return map;
+    }, [users]);
 
     // Handle incoming search highlight
     useEffect(() => {
@@ -71,10 +86,6 @@ export default function Residents() {
             }
         }
     }, [location.state, apartments, loading, navigate]);
-
-    // ─── Filtered views ────────────────────────────────────
-    const apartmentUnits = apartments.filter(a => a.unitType === 'APARTMENT');
-    const leasedUnits = apartments.filter(a => a.unitType !== 'APARTMENT');
 
     // ─── Modal helpers ─────────────────────────────────────
     const openCreateModal = () => {
@@ -202,11 +213,10 @@ export default function Residents() {
     };
 
     // ─── User name resolver ────────────────────────────────
-    const getUserName = (id: string | null): string => {
+    const getUserName = useCallback((id: string | null): string => {
         if (!id) return '—';
-        const u = users.find(u => u.id === id);
-        return u ? u.name : id.slice(0, 8) + '…';
-    };
+        return userMap.get(id) || id.slice(0, 8) + '…';
+    }, [userMap]);
 
     // ─── Tab data ──────────────────────────────────────────
     const displayData = activeTab === 'apartments' ? apartmentUnits : leasedUnits;
